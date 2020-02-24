@@ -30,8 +30,8 @@ PATH=$PATH:$M2_HOME/bin:/usr/local/bin
 export PATH
 
 # Get the artifactory user and password from your Maven settings.xml
-export ARTIFACTORY_USER=${ARTIFACTORY_USER:-$(grep '<username' "$M2_HOME"/conf/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
-export ARTIFACTORY_PASSWORD=${ARTIFACTORY_PASSWORD:-$(grep '<password' "$M2_HOME"/conf/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
+export ARTIFACTORY_USER=${ARTIFACTORY_USER:-$(grep '<username' ~/.m2/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
+export ARTIFACTORY_PASSWORD=${ARTIFACTORY_PASSWORD:-$(grep '<password' ~/.m2/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
 
 # JAVA
 function setjdk() {
