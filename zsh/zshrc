@@ -67,7 +67,7 @@ setjdk 11
 
 # KEYS (Mac OS X, zsh)
 # Bind key with "ctrl + u" to erase from the cursor position to the beginning of the line, see https://clementc.github.io/blog/2018/01/25/moving_cli/
-if [ "$(uname)" == "Darwin" ]; then
+if [[ "$(uname)" == "Darwin" ]]; then
   bindkey \^U backward-kill-line
 fi
 
