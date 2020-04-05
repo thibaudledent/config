@@ -108,6 +108,7 @@ alias sort-json="bash ~/sort-json.sh"
 alias find-my-commits="bash ~/find-my-commits.sh"
 alias generate-password="bash ~/generate-password.sh"
 alias create-note="bash ~/create-note.sh"
+alias update-all-repos.sh="bash ~/update-all-repos.sh"
 
 # other aliases
 eval "$(thefuck --alias fk)"

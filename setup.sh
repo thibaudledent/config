@@ -19,6 +19,7 @@ fi
 "$LN" "$LN_OPTS" "${PWD}"/scripts/find-my-commits.sh ~/find-my-commits.sh
 "$LN" "$LN_OPTS" "${PWD}"/scripts/generate-password.sh ~/generate-password.sh
 "$LN" "$LN_OPTS" "${PWD}"/scripts/create-note.sh ~/create-note.sh
+"$LN" "$LN_OPTS" "${PWD}"/scripts/update-all-repos.sh ~/update-all-repos.sh
 
 # MAVEN SETTINGS
 # Overriding your Maven user settings in ${user.home}/.m2/settings.xml

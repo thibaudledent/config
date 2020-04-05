@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -eEuxo pipefail
 
 GIT_DIRECTORY=/path/to/my/folder/with/git/repositories
 NAME=myname
