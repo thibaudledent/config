@@ -72,8 +72,8 @@ if [[ "$(uname)" == "Darwin" ]]; then
 fi
 
 # ALIASES
-eval "$(thefuck --alias fk)"
-alias typora="open -a typora"
+
+# git aliases
 alias g="git"
 alias ga="git add"
 alias gb="git branch"
@@ -102,6 +102,13 @@ alias gs="git status"
 alias gsta="git stash"
 alias gstp="git stash pop"
 alias glr=" git ls-remote | grep refs/heads/ | cut -c 53-"
+
+# scripts aliases
+alias sort-json="bash ~/sort-json.sh"
+
+# other aliases
+eval "$(thefuck --alias fk)"
+alias typora="open -a typora"
 
 # FZF
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

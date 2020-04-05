@@ -16,6 +16,8 @@ fi
 #"$LN" $LN_OPTS "${PWD}"/zsh/zlogin ~/.zlogin
 #"$LN" $LN_OPTS "${PWD}"/zsh/aliases.zsh ~/.aliases.zsh
 
+"$LN" $LN_OPTS "${PWD}"/scripts/sort-json.sh ~/sort-json.sh
+
 
 # MAVEN SETTINGS
 # Overriding your Maven user settings in ${user.home}/.m2/settings.xml
