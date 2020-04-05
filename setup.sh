@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -Eeuxo pipefail
 
 # Script to create symlinks for the configuration files
@@ -11,12 +11,12 @@ if [ ! -d "$HOME/.oh-my-zsh" ];
 then
   git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
 fi
-#"$LN" $LN_OPTS "${PWD}"/zsh/custom ~/.zsh-custom
-"$LN" $LN_OPTS "${PWD}"/zsh/zshrc ~/.zshrc
-#"$LN" $LN_OPTS "${PWD}"/zsh/zlogin ~/.zlogin
-#"$LN" $LN_OPTS "${PWD}"/zsh/aliases.zsh ~/.aliases.zsh
+#"$LN" "$LN_OPTS" "${PWD}"/zsh/custom ~/.zsh-custom
+"$LN" "$LN_OPTS" "${PWD}"/zsh/zshrc ~/.zshrc
+#"$LN" "$LN_OPTS" "${PWD}"/zsh/zlogin ~/.zlogin
+#"$LN" "$LN_OPTS" "${PWD}"/zsh/aliases.zsh ~/.aliases.zsh
 
-"$LN" $LN_OPTS "${PWD}"/scripts/sort-json.sh ~/sort-json.sh
+"$LN" "$LN_OPTS" "${PWD}"/scripts/sort-json.sh ~/sort-json.sh
 
 
 # MAVEN SETTINGS
@@ -33,7 +33,7 @@ echo ""
 sed -e "s/USER_LOGIN/$user/" -e "s/USER_PASSWORD/$key/"  -e "s/ARTIFACTORY_URL/$url/" "${PWD}"/maven/settings.xml > "${PWD}"/maven/settings_with_api_key.xml
 set -x
 
-"$LN" $LN_OPTS "${PWD}"/maven/settings_with_api_key.xml ~/.m2/settings.xml
+"$LN" "$LN_OPTS" "${PWD}"/maven/settings_with_api_key.xml ~/.m2/settings.xml
 
 # SUBLIME TEXT
 # TODO add config for sublime text (autocomplete)
