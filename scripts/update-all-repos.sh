@@ -16,13 +16,13 @@ then
 fi
 
 function updateOneRepo() {
-	echo "";
-	echo "Processing directory $1";
-	cd "$1";
-	git checkout master;
-	git pull;
-	git gc;
-	git branch --merged | grep -v "master" | xargs git branch -d || true;
+  echo "";
+  echo "Processing directory $1";
+  cd "$1";
+  git checkout master;
+  git pull;
+  git gc;
+  git branch --merged | grep -v "master" | xargs git branch -d || true;
 }
 
 export -f updateOneRepo
