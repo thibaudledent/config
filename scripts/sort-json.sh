@@ -6,7 +6,7 @@ count=0
 
 while IFS= read -r -d '' file
 do 
-	(( count++ ))
+    (( count++ ))
     jq -S '.' "$file" > "$file"_sorted;
     mv "$file"_sorted "$file";
 done < <(find "$mydir" -name '*.json' -print0)
