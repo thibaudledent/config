@@ -105,6 +105,7 @@ alias glr=" git ls-remote | grep refs/heads/ | cut -c 53-"
 
 # scripts aliases
 alias sort-json="bash ~/sort-json.sh"
+alias find-my-commits="bash ~/find-my-commits.sh"
 
 # other aliases
 eval "$(thefuck --alias fk)"

@@ -11,13 +11,12 @@ if [ ! -d "$HOME/.oh-my-zsh" ];
 then
   git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
 fi
-#"$LN" "$LN_OPTS" "${PWD}"/zsh/custom ~/.zsh-custom
+
 "$LN" "$LN_OPTS" "${PWD}"/zsh/zshrc ~/.zshrc
-#"$LN" "$LN_OPTS" "${PWD}"/zsh/zlogin ~/.zlogin
-#"$LN" "$LN_OPTS" "${PWD}"/zsh/aliases.zsh ~/.aliases.zsh
 
+# SYMLINKS FOR SCRIPTS
 "$LN" "$LN_OPTS" "${PWD}"/scripts/sort-json.sh ~/sort-json.sh
-
+"$LN" "$LN_OPTS" "${PWD}"/scripts/find-my-commits.sh ~/find-my-commits.sh
 
 # MAVEN SETTINGS
 # Overriding your Maven user settings in ${user.home}/.m2/settings.xml
