@@ -34,7 +34,11 @@ fi
 
 # MAVEN
 # Get the Maven directory. E.g. /usr/local/Cellar/maven/3.6.3_1/libexec (Mac OS X, brew)
-M2_HOME=$(grep -oE "\/[^\"}]+\/mvn" "$(which mvn)" | sed 's#/bin/mvn##')
+if [[ "$(uname)" == "Darwin" ]]; then
+    M2_HOME=$(grep -oE "\/[^\"}]+\/mvn" "$(which mvn)" | sed 's#/bin/mvn##')
+else
+    M2_HOME=/usr/share/maven/
+fi
 export M2_HOME
 
 PATH=$PATH:$M2_HOME/bin:/usr/local/bin
@@ -46,12 +50,16 @@ export ARTIFACTORY_PASSWORD=${ARTIFACTORY_PASSWORD:-$(grep '<password' ~/.m2/set
 
 # JAVA
 function setjdk() {
-  if [ $# -ne 0 ]; then
-   removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'
+   if [ $# -ne 0 ]; then
+      removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'
    if [ -n "${JAVA_HOME+x}" ]; then
-    removeFromPath "$JAVA_HOME"
+      removeFromPath "$JAVA_HOME"
    fi
-   JAVA_HOME=$(/usr/libexec/java_home -v "$@")
+   if [[ "$(uname)" == "Darwin" ]]; then
+      JAVA_HOME=$(/usr/libexec/java_home -v "$@")
+   else
+      JAVA_HOME="/usr/lib/jvm/java-"$@"-openjdk-amd64"
+   fi
    export JAVA_HOME
    PATH=$JAVA_HOME/bin:$PATH
    export PATH
@@ -116,3 +124,4 @@ alias typora="open -a typora"
 
 # FZF
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh

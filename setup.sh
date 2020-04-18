@@ -10,6 +10,13 @@ LN_OPTS="-f -s -v"
 if [ ! -d "$HOME/.oh-my-zsh" ];
 then
   git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+
+  echo "Install zsh plugin (run one command at a time!)"
+  echo "git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
+  ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+  echo "git clone https://github.com/zsh-users/zsh-autosuggestions.git
+  ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+
 fi
 
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
