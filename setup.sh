@@ -41,11 +41,11 @@ echo -n "Enter your Maven settings.xml artifactory user: "
 read -r user
 echo -n "Enter your Maven settings.xml artifactory api key: "
 read -rs key
-echo -n "\nEnter your Maven settings.xml artifactory url: "
+echo -n "\nEnter your Maven settings.xml artifactory url (with https:// in front): "
 read -r url
 echo ""
 
-sed -e "s/USER_LOGIN/$user/" -e "s/USER_PASSWORD/$key/"  -e "s/ARTIFACTORY_URL/$url/" "${PWD}"/maven/settings.xml > "${PWD}"/maven/settings_with_api_key.xml
+sed -e "s/USER_LOGIN/$user/" -e "s/USER_PASSWORD/$key/"  -e "s#ARTIFACTORY_URL#$url#" "${PWD}"/maven/settings.xml > "${PWD}"/maven/settings_with_api_key.xml
 set -x
 
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
