@@ -41,7 +41,7 @@ echo -n "Enter your Maven settings.xml artifactory user: "
 read -r user
 echo -n "Enter your Maven settings.xml artifactory api key: "
 read -rs key
-echo -n "\nEnter your Maven settings.xml artifactory url (with https:// in front): "
+echo -n "\nEnter your Maven settings.xml artifactory url (with 'https://' in front and '/artifactory' at the end): "
 read -r url
 echo ""
 
