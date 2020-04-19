@@ -3,37 +3,37 @@
     padding: 0;
     border: 0;
     border-style: solid;
-    border-width: 0px;
+    border-width: 0px
 }
 
-.terminator-terminal-window notebook tab:checked {
+.terminator-terminal-window notebook tab: checked {
     background-color: #000;
-    background-image: none;
+    background-image: none
 }
 
 .terminator-terminal-window notebook tab label {
-    color: #808080;
+    color: #808080
 }
 
-.terminator-terminal-window notebook tab:checked label {
+.terminator-terminal-window notebook tab: checked label {
     color: #ddd;
-    font-weight: 500;
+    font-weight: 500
 }
 
 .terminator-terminal-window notebook tab button {
     padding: 0;
     background-color: transparent;
-    color: #f00;
+    color: #f00
 }
 
 .terminator-terminal-window notebook header {
-    background-color: #808080;
+    background-color: #808080
 }
 
-.terminator-terminal-window notebook tab button:hover {
-  border: 0;
-  background-image: none;
-  border-color: #000;
-  border-style: none;
-  border-width: 0px;
+.terminator-terminal-window notebook tab button: hover {
+    border: 0;
+    background-image: none;
+    border-color: #000;
+    border-style: none;
+    border-width: 0px
 }
