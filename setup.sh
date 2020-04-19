@@ -10,13 +10,8 @@ LN_OPTS="-f -s -v"
 if [ ! -d "$HOME/.oh-my-zsh" ];
 then
   git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
-
-  echo "Install zsh plugin (run one command at a time!)"
-  echo "git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
-  ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-  echo "git clone https://github.com/zsh-users/zsh-autosuggestions.git
-  ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+  git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 fi
 
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
@@ -45,7 +40,7 @@ echo -n "Enter your Maven settings.xml artifactory user: "
 read -r user
 echo -n "Enter your Maven settings.xml artifactory api key: "
 read -rs key
-echo -n "\nEnter your Maven settings.xml artifactory url (with 'https://' in front and '/artifactory' at the end): "
+echo -n "\nEnter your Maven settings.xml artifactory url (including 'https://' in front and '/artifactory' at the end): "
 read -r url
 echo ""
 
@@ -58,6 +53,3 @@ mkdir -p ~/.m2
 
 # SUBLIME TEXT
 # TODO add config for sublime text (autocomplete)
-
-# SCRIPTS
-# TODO add my scripts sort-json, update all reposs... and create aliases for them so they can be used anywhere
