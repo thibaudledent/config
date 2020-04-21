@@ -125,7 +125,6 @@ alias create-note="bash ~/create-note.sh"
 alias update-all-repos="bash ~/update-all-repos.sh"
 
 # other aliases
-eval "$(thefuck --alias fk)"
 alias typora="open -a typora"
 
 # FZF
