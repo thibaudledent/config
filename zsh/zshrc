@@ -125,7 +125,9 @@ alias create-note="bash ~/create-note.sh"
 alias update-all-repos="bash ~/update-all-repos.sh"
 
 # other aliases
-alias typora="open -a typora"
+if [[ "$(uname)" == "Darwin" ]]; then
+  alias typora="open -a typora"
+fi
 
 # FZF
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
