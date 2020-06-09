@@ -12,6 +12,9 @@ then
   git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
   git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+  # make zsh your default shell
+  chsh -s $(which zsh)
+  # then log out and log back in
 fi
 
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
@@ -31,7 +34,7 @@ fi
 
 # TERMINATOR TABS
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
-"$LN" $LN_OPTS "${PWD}"/terminator/gtk.css ~/.config/gtk-3.0/gtk.css
+#"$LN" $LN_OPTS "${PWD}"/terminator/gtk.css ~/.config/gtk-3.0/gtk.css
 
 # MAVEN SETTINGS
 # Overriding your Maven user settings in ${user.home}/.m2/settings.xml
