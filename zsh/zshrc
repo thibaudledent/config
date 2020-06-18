@@ -128,6 +128,7 @@ alias update-all-repos="bash ~/update-all-repos.sh"
 if [[ "$(uname)" == "Darwin" ]]; then
   alias typora="open -a typora"
 fi
+export GPG_TTY=`tty`
 
 # FZF
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

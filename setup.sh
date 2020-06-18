@@ -32,9 +32,11 @@ fi
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 "$LN" $LN_OPTS "${PWD}"/scripts/update-all-repos.sh ~/update-all-repos.sh
 
-# TERMINATOR TABS
-# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
-#"$LN" $LN_OPTS "${PWD}"/terminator/gtk.css ~/.config/gtk-3.0/gtk.css
+# SUBLIME TEXT
+# TODO add config for sublime text (autocomplete)
+
+# TERMINATOR
+# TODO font size, home directory
 
 # MAVEN SETTINGS
 # Overriding your Maven user settings in ${user.home}/.m2/settings.xml
@@ -54,5 +56,3 @@ set -x
 mkdir -p ~/.m2
 "$LN" $LN_OPTS "${PWD}"/maven/settings_with_api_key.xml ~/.m2/settings.xml
 
-# SUBLIME TEXT
-# TODO add config for sublime text (autocomplete)
