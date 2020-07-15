@@ -84,7 +84,7 @@ fi
 # git aliases
 alias g="git"
 alias ga="git add"
-alias gb="git branch"
+alias gb="git --no-pager branch"
 alias gbd="git branch -d"
 alias gc="git commit"
 alias gcam="git commit -am"
