@@ -2,7 +2,7 @@
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-ZSH_THEME="agnoster"
+ZSH_THEME="agnoster" #"powerlevel10k/powerlevel10k" (does not work with pgp signing of commits)
 
 plugins=(
   git
@@ -71,13 +71,11 @@ function removeFromPath() {
   export PATH
 }
 
-setjdk 11
+setjdk 14
 
-# KEYS (Mac OS X, zsh)
+# KEYS (Ubuntu & Mac OS X when using zsh)
 # Bind key with "ctrl + u" to erase from the cursor position to the beginning of the line, see https://clementc.github.io/blog/2018/01/25/moving_cli/
-if [[ "$(uname)" == "Darwin" ]]; then
-  bindkey \^U backward-kill-line
-fi
+bindkey \^U backward-kill-line
 
 # ALIASES
 
