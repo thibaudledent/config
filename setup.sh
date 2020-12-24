@@ -31,6 +31,8 @@ fi
 "$LN" $LN_OPTS "${PWD}"/scripts/create-note.sh ~/create-note.sh
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 "$LN" $LN_OPTS "${PWD}"/scripts/update-all-repos.sh ~/update-all-repos.sh
+# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
+"$LN" $LN_OPTS "${PWD}"/scripts/get-remote.sh ~/get-remote.sh
 
 # SUBLIME TEXT
 # TODO add config for sublime text (autocomplete)

@@ -34,6 +34,9 @@ fi
 
 # MAVEN
 # Get the Maven directory. E.g. /usr/local/Cellar/maven/3.6.3_1/libexec (Mac OS X, brew)
+
+# TODO M2_INSTALL_DIR shouldn't be M2_HOME?
+
 if [[ "$(uname)" == "Darwin" ]]; then
     M2_INSTALL_DIR=$(grep -oE "\/[^\"}]+\/mvn" "$(which mvn)" | sed 's#/bin/mvn##')
 else
@@ -121,6 +124,7 @@ alias find-my-commits="bash ~/find-my-commits.sh"
 alias generate-password="bash ~/generate-password.sh"
 alias create-note="bash ~/create-note.sh"
 alias update-all-repos="bash ~/update-all-repos.sh"
+alias get-remote="bash ~/get-remote.sh"
 
 # other aliases
 if [[ "$(uname)" == "Darwin" ]]; then
