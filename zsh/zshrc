@@ -26,28 +26,16 @@ setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording en
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
 setopt HIST_BEEP                 # Beep when accessing nonexistent history.
 
-
 source "$ZSH"/oh-my-zsh.sh
-
-# AUTO UPDATES (Mac OS X, update brew if older than 2 days)
-if [[ "$(uname)" == "Darwin" ]] && [[ "$(find ~/Library/Caches/Homebrew/descriptions.json -mtime +2 -print)" ]]; then
-  echo "Check for brew updates..."
-  brew update && brew upgrade && brew cask upgrade
-  echo ""
-  echo "brew updated! You can run a 'brew cleanup -s' to remove old versions of software."
-fi
 
 # MAVEN
 # Get the Maven directory. E.g. /usr/local/Cellar/maven/3.6.3_1/libexec (Mac OS X, brew)
-
-# TODO M2_INSTALL_DIR shouldn't be M2_HOME?
 
 if [[ "$(uname)" == "Darwin" ]]; then
     M2_INSTALL_DIR=$(grep -oE "\/[^\"}]+\/mvn" "$(which mvn)" | sed 's#/bin/mvn##')
 else
     M2_INSTALL_DIR=/usr/share/maven
 fi
-
 
 PATH=$PATH:$M2_INSTALL_DIR/bin:/usr/local/bin
 export PATH
