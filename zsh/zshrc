@@ -12,6 +12,8 @@ plugins=(
 )
 
 # History command configuration, see https://github.com/mattjj/my-oh-my-zsh/blob/master/history.zsh
+# /!\ WARNING be aware that, if you're using oh-my-zsh by default, the oh-my-zsh option overrides 
+# the ones you've set in ~/.zshrc, you can fiddle with it in ~/.oh-my-zsh/lib/history.zsh.
 setopt BANG_HIST                 # Treat the '!' character specially during expansion.
 setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
 setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
@@ -75,7 +77,7 @@ function removeFromPath() {
 # if `java -version` does not return the correct version, it
 # might be that `where java` returns several path. If yes,
 # you can remove the other ones (e.g. `sudo rm /bin/java`)
-setjdk adoptopenjdk-16-hotspot
+setjdk adoptopenjdk-15-hotspot
 
 # KEYS (Ubuntu & Mac OS X when using zsh)
 # Bind key with "ctrl + u" to erase from the cursor position to the beginning of the line, see https://clementc.github.io/blog/2018/01/25/moving_cli/
@@ -118,6 +120,11 @@ alias gasp="git add \$(git status -s | sed -E 's/(^ M |^\?\? )//' | percol)"
 alias gmop="git merge origin/\$(glr | percol)"
 alias glrp="gco \$(glr | percol)"
 alias gcop="gco \$(gs | grep modified | sed -e 's/modified://' | percol)"
+
+# Usage `gpmr prod "merge request title"`
+function gpmr() {
+   git push origin $(git branch --show-current) -o merge_request.target=${1:-master} -o merge_request.create -o merge_request.title="${2:-$(git log -1 --pretty=%B | head -n 1)}";
+}
 
 # scripts aliases
 alias sort-json="bash ~/sort-json.sh"
