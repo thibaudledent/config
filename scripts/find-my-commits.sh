@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 GIT_DIRECTORY=/path/to/my/folder/with/git/repositories
-NAME=myname
-START_DATE=2020-10-02
+NAME=firstname.lastname@mycompany.com
+START_DATE=2021-09-03
 
 cd $GIT_DIRECTORY || exit
 rm -f /tmp/gitlog

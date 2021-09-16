@@ -14,6 +14,7 @@ plugins=(
 # History command configuration, see https://github.com/mattjj/my-oh-my-zsh/blob/master/history.zsh
 # /!\ WARNING be aware that, if you're using oh-my-zsh by default, the oh-my-zsh option overrides 
 # the ones you've set in ~/.zshrc, you can fiddle with it in ~/.oh-my-zsh/lib/history.zsh.
+# You can also remove duplicates in the file using a simple spreadsheet...
 setopt BANG_HIST                 # Treat the '!' character specially during expansion.
 setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
 setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
