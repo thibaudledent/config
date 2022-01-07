@@ -19,6 +19,8 @@ fi
 
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 "$LN" $LN_OPTS "${PWD}"/zsh/zshrc ~/.zshrc
+# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
+"$LN" $LN_OPTS "${PWD}"/terminator/config ~/.config/terminator/config
 
 # SYMLINKS FOR SCRIPTS
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS

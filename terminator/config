@@ -1,0 +1,22 @@
+[global_config]
+  title_transmit_bg_color = "#2e3436"
+[keybindings]
+[profiles]
+  [[default]]
+    background_darkness = 0.8
+    background_type = transparent
+    cursor_color = "#aaaaaa"
+    font = MesloLGS NF 9
+    scrollback_infinite = True
+    use_system_font = False
+[layouts]
+  [[default]]
+    [[[window0]]]
+      type = Window
+      parent = ""
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+      profile = default
+      directory = Documents/Ingenico/AH1
+[plugins]

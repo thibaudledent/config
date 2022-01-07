@@ -1,8 +1,15 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # ZSH
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-ZSH_THEME="agnoster" #"powerlevel10k/powerlevel10k" (does not work with pgp signing of commits)
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 plugins=(
   git
@@ -70,15 +77,14 @@ function removeFromPath() {
   export PATH
 }
 
-# For Ubuntu: usage of setjdk: e.g. java-14-openjdk-amd64
+# For Ubuntu: usage of setjdk (see the folder name in `ls /usr/lib/jvm/`):
 # setjdk java-14-openjdk
-# Or for Java 15:
 # setjdk adoptopenjdk-15-hotspot
 # ------
 # if `java -version` does not return the correct version, it
 # might be that `where java` returns several path. If yes,
 # you can remove the other ones (e.g. `sudo rm /bin/java`)
-setjdk adoptopenjdk-15-hotspot
+setjdk java-17-openjdk
 
 # KEYS (Ubuntu & Mac OS X when using zsh)
 # Bind key with "ctrl + u" to erase from the cursor position to the beginning of the line, see https://clementc.github.io/blog/2018/01/25/moving_cli/
@@ -139,8 +145,11 @@ alias get-remote="bash ~/get-remote.sh"
 if [[ "$(uname)" == "Darwin" ]]; then
   alias typora="open -a typora"
 fi
-export GPG_TTY=`tty`
+export GPG_TTY=$TTY # work with zsh and powerlevel10k, see https://thecesrom.dev/2021/01/27/troubleshooting-gpg-signed-commits-on-macos/
 
 # FZF
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
