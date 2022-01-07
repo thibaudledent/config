@@ -81,7 +81,7 @@ function removeFromPath() {
 # setjdk java-14-openjdk
 # setjdk adoptopenjdk-15-hotspot
 # ------
-# if `java -version` does not return the correct version, it
+# if `java --version` does not return the correct version, it
 # might be that `where java` returns several path. If yes,
 # you can remove the other ones (e.g. `sudo rm /bin/java`)
 setjdk java-17-openjdk
