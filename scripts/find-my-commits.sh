@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 
-GIT_DIRECTORY=/path/to/my/folder/with/git/repositories
-NAME=$(git config user.email)
-START_DATE=2022-01-06
+START_DATE=$1  # e.g. 2022-01-07
+GIT_DIRECTORY=$2  # e.g. /home/john/Documents
+E_MAIL=${3:-$(git config user.email)}  # e.g. john.doe@company.com
+
+echo "Searching commits of $E_MAIL from $START_DATE in $GIT_DIRECTORY"
 
 cd $GIT_DIRECTORY || exit
 rm -f /tmp/gitlog
 
 find . -type d -name .git | while read -r i; 
-do 
+do
     DIR=$(dirname "$i")
     cd "$DIR" || exit
-    git log --pretty=format:"%at %ai %ae %s" --since="${START_DATE}T00:00:00" | grep -i $NAME | grep -Ev "Merge|Revert" >> /tmp/gitlog
+    git log --pretty=format:"%at %ai %ae %s" --since="${START_DATE}T00:00:00" | grep -i $E_MAIL | grep -Ev "Merge|Revert" >> /tmp/gitlog
     cd $GIT_DIRECTORY || exit
 done
 
-sort /tmp/gitlog | awk '{print $2" "$3" "$6}'
+sort /tmp/gitlog | awk '{print $2" "$6}' | sort | uniq -c
