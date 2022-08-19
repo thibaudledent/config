@@ -84,7 +84,7 @@ function removeFromPath() {
 # if `java --version` does not return the correct version, it
 # might be that `where java` returns several path. If yes,
 # you can remove the other ones (e.g. `sudo rm /bin/java`)
-setjdk java-17-openjdk
+setjdk temurin-18-jdk
 
 # KEYS (Ubuntu & Mac OS X when using zsh)
 # Bind key with "ctrl + u" to erase from the cursor position to the beginning of the line, see https://clementc.github.io/blog/2018/01/25/moving_cli/

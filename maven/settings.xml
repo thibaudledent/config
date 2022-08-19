@@ -12,7 +12,7 @@
       <id>artifactory</id>
       <name>Artifactory</name>
       <mirrorOf>*</mirrorOf>
-      <url>ARTIFACTORY_URL/tunz-repo/</url>
+      <url>ARTIFACTORY_URL</url>
     </mirror>
   </mirrors>
 </settings>
