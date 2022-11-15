@@ -144,6 +144,10 @@ alias update-all-repos="bash ~/update-all-repos.sh"
 if [[ "$(uname)" == "Darwin" ]]; then
   alias typora="open -a typora"
 fi
+
+alias ccode="code \$( find \$HOME/ 2>/dev/null | fzf )"
+alias ccd='cd $( find / -type d -not -path "$HOME/.m2/*" 2>/dev/null | fzf)'
+
 export GPG_TTY=$TTY # work with zsh and powerlevel10k, see https://thecesrom.dev/2021/01/27/troubleshooting-gpg-signed-commits-on-macos/
 
 # FZF

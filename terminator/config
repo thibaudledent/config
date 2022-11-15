@@ -6,7 +6,7 @@
     background_darkness = 0.8
     background_type = transparent
     cursor_color = "#aaaaaa"
-    font = MesloLGS NF 9
+    font = MesloLGS NF 12
     scrollback_infinite = True
     use_system_font = False
 [layouts]
