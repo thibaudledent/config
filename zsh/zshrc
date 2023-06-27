@@ -139,6 +139,7 @@ alias find-my-commits="bash ~/find-my-commits.sh"
 alias generate-password="bash ~/generate-password.sh"
 alias create-note="bash ~/create-note.sh"
 alias update-all-repos="bash ~/update-all-repos.sh"
+alias create-jira="python3 ~/create-jira.py"
 
 # other aliases
 if [[ "$(uname)" == "Darwin" ]]; then
