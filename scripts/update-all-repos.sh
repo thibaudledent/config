@@ -4,7 +4,7 @@ set -eEuxo pipefail
 REPOSITORY_PATH="$PWD"
 echo "Path to update: ${REPOSITORY_PATH}"
 
-REPOSITORY=$(find "${REPOSITORY_PATH}" -maxdepth 1 -type d)
+REPOSITORY=$(find "${REPOSITORY_PATH}" -type d | grep -v '_git' | grep 'git' | sed 's#.git.*##g' | sort --unique)
 
 PARALLEL_CMD=$(command -v parallel)
 if [ "x" == "x${PARALLEL_CMD}" ];

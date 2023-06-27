@@ -84,7 +84,7 @@ function removeFromPath() {
 # if `java --version` does not return the correct version, it
 # might be that `where java` returns several path. If yes,
 # you can remove the other ones (e.g. `sudo rm /bin/java`)
-setjdk temurin-18-jdk
+setjdk temurin-20-jdk
 
 # KEYS (Ubuntu & Mac OS X when using zsh)
 # Bind key with "ctrl + u" to erase from the cursor position to the beginning of the line, see https://clementc.github.io/blog/2018/01/25/moving_cli/
@@ -122,11 +122,11 @@ alias gs="git status"
 alias gsta="git stash"
 alias gstp="git stash pop"
 alias glr="git ls-remote | grep refs/heads/ | cut -c 53-"
-alias gbdp="gbd \$(gb | percol)"
-alias gasp="git add \$(git status -s | sed -E 's/(^ M |^\?\? )//' | percol)"
-alias gmop="git merge origin/\$(glr | percol)"
-alias glrp="gco \$(glr | percol)"
-alias gcop="gco \$(gs | grep modified | sed -e 's/modified://' | percol)"
+alias gbdf="gbd \$(gb | grep -v \* | grep -v master | fzf -m)"
+alias gasf="git add \$(git status -s | sed -E 's/(^ M |^\?\? )//' | fzf)"
+alias gmof="git merge origin/\$(gf && glr | fzf)"
+alias glrf="gco \$(gf && glr | fzf)"
+alias gcof="gco \$(gs | grep modified | sed -e 's/modified://' | fzf -m)"
 
 # Usage `gpmr prod "merge request title"`
 function gpmr() {
@@ -145,8 +145,15 @@ if [[ "$(uname)" == "Darwin" ]]; then
   alias typora="open -a typora"
 fi
 
-alias ccode="code \$( find \$HOME/ 2>/dev/null | fzf )"
-alias ccd='cd $( find / -type d -not -path "$HOME/.m2/*" 2>/dev/null | fzf)'
+alias ccode="code \$( find \$HOME/ 2>/dev/null | fzf )" # to exclude a path, use '-not -path "$HOME/.m2/*"
+alias ccd='cd $( find $HOME/Documents/worldline/ -type d 2>/dev/null | fzf)'
+
+# could be added as aliases
+# sudo xdg-open . # Opening the file browser from terminal as root (gnome file)
+# kill -9 $(ps aux | grep -i gpg-agent | grep -v grep | awk '{print $2}')
+# gcam "$(gb | grep \* | grep -Po '(AHUB|SHASE)-[0-9]+') your commit message"
+# git push origin +$(gb | grep \* | sed 's/* //g')
+# sudo apt update && sudo apt upgrade && sudo sudo apt autoremove && sudo snap refresh
 
 export GPG_TTY=$TTY # work with zsh and powerlevel10k, see https://thecesrom.dev/2021/01/27/troubleshooting-gpg-signed-commits-on-macos/
 

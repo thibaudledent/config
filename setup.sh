@@ -9,9 +9,11 @@ LN_OPTS="-f -s -v"
 # ZSH
 if [ ! -d "$HOME/.oh-my-zsh" ];
 then
-  git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+  sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
   git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+  git clone https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
+  wget https://github.com/romkatv/dotfiles-public/blob/master/.local/share/fonts/NerdFonts/MesloLGS%20NF%20Regular.ttf
   # make zsh your default shell
   chsh -s $(which zsh)
   # then log out and log back in
@@ -33,12 +35,6 @@ fi
 "$LN" $LN_OPTS "${PWD}"/scripts/create-note.sh ~/create-note.sh
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 "$LN" $LN_OPTS "${PWD}"/scripts/update-all-repos.sh ~/update-all-repos.sh
-
-# SUBLIME TEXT
-# TODO add config for sublime text (autocomplete)
-
-# TERMINATOR
-# TODO font size, home directory
 
 # MAVEN SETTINGS
 # Overriding your Maven user settings in ${user.home}/.m2/settings.xml

@@ -18,5 +18,5 @@
       type = Terminal
       parent = window0
       profile = default
-      directory = Documents/Ingenico/AH1
+      directory = /home/thibaud/Documents/worldline/ahub
 [plugins]
