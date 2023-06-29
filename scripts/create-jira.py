@@ -44,8 +44,9 @@ def create_jira_ticket(base_url, project_key, issue_type, summary, description, 
 
     # Check the response status code
     if response.status_code == 201:
-        print(f"response: {response}")
-        ticket_key = response.key
+        json_response = response.json()
+        print(f"response: {json_response}")
+        ticket_key = json_response['key']
         jira_url = base_url + "/browse/" + ticket_key
         print("Jira ticket created successfully!", jira_url)
     else:
@@ -65,10 +66,6 @@ if __name__ == "__main__":
     base_url = config['jira']['base_url']
     token = config['jira']['token']
     custom_fields = config['jira']['custom_fields']
-
-    #print(f"Jira Base URL: {ba se_url}")
-    #print(f"Jira Token: {token}")
-    #print(f"Jira customfields: {custom_fields}")
 
     # Get the Jira project key from the user
     project_key = input("Enter the Jira project key: ")
