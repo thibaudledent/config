@@ -3,6 +3,18 @@ import getpass
 import os
 import yaml
 
+# To get all fields (including custom fields)
+#curl -H "Authorization: Bearer TOKEN"  \
+#    -H "Content-Type: application/json" https://jira.your.company.com/rest/api/2/field/
+
+# To get all possible values for all fields
+#curl -H "Authorization: Bearer TOKEN"  \
+#    -H "Content-Type: application/json" https://jira.your.company.com/rest/api/2/issue/MYPROJECT-123/editmeta
+
+# To get all components for a project
+#curl -H "Authorization: Bearer TOKEN"  \
+#    -H "Content-Type: application/json" https://jira.your.company.com/rest/api/2/project/$PROJECT_KEY/components
+
 def create_jira_ticket(base_url, project_key, issue_type, summary, description, token, custom_fields):
     # Construct the API endpoint URL
     url = f"{base_url}/rest/api/2/issue/"
