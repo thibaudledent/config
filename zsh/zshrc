@@ -48,6 +48,7 @@ else
 fi
 
 PATH=$PATH:$M2_INSTALL_DIR/bin:/usr/local/bin
+PATH=$PATH:/usr/local/go/bin
 export PATH
 
 # Get the artifactory user and password from your Maven settings.xml
@@ -84,7 +85,7 @@ function removeFromPath() {
 # if `java --version` does not return the correct version, it
 # might be that `where java` returns several path. If yes,
 # you can remove the other ones (e.g. `sudo rm /bin/java`)
-setjdk temurin-20-jdk
+setjdk temurin-21-jdk
 
 # KEYS (Ubuntu & Mac OS X when using zsh)
 # Bind key with "ctrl + u" to erase from the cursor position to the beginning of the line, see https://clementc.github.io/blog/2018/01/25/moving_cli/
