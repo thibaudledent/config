@@ -40,19 +40,21 @@ source "$ZSH"/oh-my-zsh.sh
 
 # MAVEN
 # Get the Maven directory. E.g. /usr/local/Cellar/maven/3.6.3_1/libexec (Mac OS X, brew)
+if [ -e ~/.m2/settings.xml ]
+then
+   if [[ "$(uname)" == "Darwin" ]]; then
+       M2_INSTALL_DIR=$(grep -oE "\/[^\"}]+\/mvn" "$(which mvn)" | sed 's#/bin/mvn##')
+   else
+       M2_INSTALL_DIR=/usr/share/maven
+   fi
 
-if [[ "$(uname)" == "Darwin" ]]; then
-    M2_INSTALL_DIR=$(grep -oE "\/[^\"}]+\/mvn" "$(which mvn)" | sed 's#/bin/mvn##')
-else
-    M2_INSTALL_DIR=/usr/share/maven
+   PATH=$PATH:$M2_INSTALL_DIR/bin:/usr/local/bin
+   export PATH
+
+   # Get the artifactory user and password from your Maven settings.xml
+   export ARTIFACTORY_USER=${ARTIFACTORY_USER:-$(grep '<username' ~/.m2/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
+   export ARTIFACTORY_PASSWORD=${ARTIFACTORY_PASSWORD:-$(grep '<password' ~/.m2/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
 fi
-
-PATH=$PATH:$M2_INSTALL_DIR/bin:/usr/local/bin
-export PATH
-
-# Get the artifactory user and password from your Maven settings.xml
-export ARTIFACTORY_USER=${ARTIFACTORY_USER:-$(grep '<username' ~/.m2/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
-export ARTIFACTORY_PASSWORD=${ARTIFACTORY_PASSWORD:-$(grep '<password' ~/.m2/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
 
 # JAVA
 function setjdk() {
@@ -147,12 +149,12 @@ if [[ "$(uname)" == "Darwin" ]]; then
 fi
 
 alias ccode="code \$( find \$HOME/ 2>/dev/null | fzf )" # to exclude a path, use '-not -path "$HOME/.m2/*"
-alias ccd='cd $( find $HOME/Documents/worldline/ -type d 2>/dev/null | fzf)'
+alias ccd='cd $( find $HOME/Documents/ -type d 2>/dev/null | fzf)'
 
 # could be added as aliases
 # sudo xdg-open . # Opening the file browser from terminal as root (gnome file)
 # kill -9 $(ps aux | grep -i gpg-agent | grep -v grep | awk '{print $2}')
-# gcam "$(gb | grep \* | grep -Po '(AHUB|SHASE)-[0-9]+') your commit message"
+# gcam "$(gb | grep \* | grep -Po '(JIRAPROJECT1|JIRAPROJECT2)-[0-9]+') your commit message"
 # git push origin +$(gb | grep \* | sed 's/* //g')
 # sudo apt update && sudo apt upgrade && sudo sudo apt autoremove && sudo snap refresh
 

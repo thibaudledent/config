@@ -18,5 +18,5 @@
       type = Terminal
       parent = window0
       profile = default
-      directory = /home/thibaud/Documents/worldline/ahub
+      directory = /home/thibaud/Documents
 [plugins]

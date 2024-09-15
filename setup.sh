@@ -9,7 +9,8 @@ LN_OPTS="-f -s -v"
 # ZSH
 if [ ! -d "$HOME/.oh-my-zsh" ];
 then
-  sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  sudo apt install zsh -y
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
   git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
   git clone https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
@@ -22,7 +23,10 @@ fi
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 "$LN" $LN_OPTS "${PWD}"/zsh/zshrc ~/.zshrc
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
-"$LN" $LN_OPTS "${PWD}"/terminator/config ~/.config/terminator/config
+if [ -e ~/.config/terminator/config ]
+then
+  "$LN" $LN_OPTS "${PWD}"/terminator/config ~/.config/terminator/config
+fi
 
 # SYMLINKS FOR SCRIPTS
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
