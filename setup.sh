@@ -9,7 +9,7 @@ LN_OPTS="-f -s -v"
 # ZSH
 if [ ! -d "$HOME/.oh-my-zsh" ];
 then
-  sudo apt install zsh -y
+  sudo apt install zsh fzf terminator curl -y
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
   git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
@@ -44,19 +44,21 @@ fi
 
 # MAVEN SETTINGS
 # Overriding your Maven user settings in ${user.home}/.m2/settings.xml
-set +x
-echo -n "Enter your Maven settings.xml artifactory user: "
-read -r user
-echo -n "Enter your Maven settings.xml artifactory api key: "
-read -rs key
-echo -n "\nEnter your Maven settings.xml artifactory url (including 'https://' in front and '/artifactory' at the end): "
-read -r url
-echo ""
+if [ -e ~/.m2/settings.xml ]
+then
+  set +x
+  echo -n "Enter your Maven settings.xml artifactory user: "
+  read -r user
+  echo -n "Enter your Maven settings.xml artifactory api key: "
+  read -rs key
+  echo -n "\nEnter your Maven settings.xml artifactory url (including 'https://' in front and '/artifactory' at the end): "
+  read -r url
+  echo ""
 
-sed -e "s/USER_LOGIN/$user/" -e "s/USER_PASSWORD/$key/"  -e "s#ARTIFACTORY_URL#$url#" "${PWD}"/maven/settings.xml > "${PWD}"/maven/settings_with_api_key.xml
-set -x
+  sed -e "s/USER_LOGIN/$user/" -e "s/USER_PASSWORD/$key/"  -e "s#ARTIFACTORY_URL#$url#" "${PWD}"/maven/settings.xml > "${PWD}"/maven/settings_with_api_key.xml
+  set -x
 
-# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
-mkdir -p ~/.m2
-"$LN" $LN_OPTS "${PWD}"/maven/settings_with_api_key.xml ~/.m2/settings.xml
-
+  # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
+  mkdir -p ~/.m2
+  "$LN" $LN_OPTS "${PWD}"/maven/settings_with_api_key.xml ~/.m2/settings.xml
+fi
