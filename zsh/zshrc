@@ -2,7 +2,7 @@
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 # ZSH
@@ -12,10 +12,10 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
 plugins=(
-  git
-  docker
-  zsh-syntax-highlighting
-  zsh-autosuggestions
+    git
+    docker
+    zsh-syntax-highlighting
+    zsh-autosuggestions
 )
 
 # History command configuration, see https://github.com/mattjj/my-oh-my-zsh/blob/master/history.zsh
@@ -42,41 +42,41 @@ source "$ZSH"/oh-my-zsh.sh
 # Get the Maven directory. E.g. /usr/local/Cellar/maven/3.6.3_1/libexec (Mac OS X, brew)
 if [ -e ~/.m2/settings.xml ]
 then
-   if [[ "$(uname)" == "Darwin" ]]; then
-       M2_INSTALL_DIR=$(grep -oE "\/[^\"}]+\/mvn" "$(which mvn)" | sed 's#/bin/mvn##')
-   else
-       M2_INSTALL_DIR=/usr/share/maven
-   fi
+    if [[ "$(uname)" == "Darwin" ]]; then
+        M2_INSTALL_DIR=$(grep -oE "\/[^\"}]+\/mvn" "$(which mvn)" | sed 's#/bin/mvn##')
+    else
+        M2_INSTALL_DIR=/usr/share/maven
+    fi
 
-   PATH=$PATH:$M2_INSTALL_DIR/bin:/usr/local/bin
-   export PATH
+    PATH=$PATH:$M2_INSTALL_DIR/bin:/usr/local/bin
+    export PATH
 
-   # Get the artifactory user and password from your Maven settings.xml
-   export ARTIFACTORY_USER=${ARTIFACTORY_USER:-$(grep '<username' ~/.m2/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
-   export ARTIFACTORY_PASSWORD=${ARTIFACTORY_PASSWORD:-$(grep '<password' ~/.m2/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
+    # Get the artifactory user and password from your Maven settings.xml
+    export ARTIFACTORY_USER=${ARTIFACTORY_USER:-$(grep '<username' ~/.m2/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
+    export ARTIFACTORY_PASSWORD=${ARTIFACTORY_PASSWORD:-$(grep '<password' ~/.m2/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
 fi
 
 # JAVA
 function setjdk() {
-   if [ $# -ne 0 ]; then
-      removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'
-   if [ -n "${JAVA_HOME+x}" ]; then
-      removeFromPath "$JAVA_HOME"
-   fi
-   if [[ "$(uname)" == "Darwin" ]]; then
-      JAVA_HOME=$(/usr/libexec/java_home -v "$@")
-   else
-      JAVA_HOME="/usr/lib/jvm/"$@"-amd64"
-   fi
-   export JAVA_HOME
-   PATH=$JAVA_HOME/bin:$PATH
-   export PATH
-  fi
+    if [ $# -ne 0 ]; then
+        removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'
+        if [ -n "${JAVA_HOME+x}" ]; then
+            removeFromPath "$JAVA_HOME"
+        fi
+        if [[ "$(uname)" == "Darwin" ]]; then
+            JAVA_HOME=$(/usr/libexec/java_home -v "$@")
+        else
+            JAVA_HOME="/usr/lib/jvm/"$@"-amd64"
+        fi
+        export JAVA_HOME
+        PATH=$JAVA_HOME/bin:$PATH
+        export PATH
+    fi
 }
 
 function removeFromPath() {
-  PATH=$(echo "$PATH" | sed -E -e "s;:$1;;" -e "s;$1:?;;")
-  export PATH
+    PATH=$(echo "$PATH" | sed -E -e "s;:$1;;" -e "s;$1:?;;")
+    export PATH
 }
 
 # For Ubuntu: usage of setjdk (see the folder name in `ls /usr/lib/jvm/`):
@@ -132,7 +132,7 @@ alias gcof="gco \$(gs | grep modified | sed -e 's/modified://' | fzf -m)"
 
 # Usage `gpmr prod "merge request title"`
 function gpmr() {
-   git push origin $(git branch --show-current) -o merge_request.target=${1:-master} -o merge_request.create -o merge_request.title="${2:-$(git log -1 --pretty=%B | head -n 1)}";
+    git push origin $(git branch --show-current) -o merge_request.target=${1:-master} -o merge_request.create -o merge_request.title="${2:-$(git log -1 --pretty=%B | head -n 1)}";
 }
 
 # scripts aliases
@@ -145,11 +145,16 @@ alias create-jira="python3 ~/create-jira.py"
 
 # other aliases
 if [[ "$(uname)" == "Darwin" ]]; then
-  alias typora="open -a typora"
+     alias typora="open -a typora"
 fi
 
-alias ccode="code \$( find \$HOME/ 2>/dev/null | fzf )" # to exclude a path, use '-not -path "$HOME/.m2/*"
-alias ccd='cd $( find $HOME/Documents/ -type d 2>/dev/null | fzf)'
+if [ -f "/etc/wsl.conf" ]; then
+    CUSTOM_HOME="/mnt/c/Users/ledentth/"
+else
+    CUSTOM_HOME=$HOME
+fi
+alias ccode="code \$( find \$CUSTOM_HOME/ 2>/dev/null | fzf )" # to exclude a path, use '-not -path "$HOME/.m2/*"
+alias ccd='cd $( find $CUSTOM_HOME/Documents/ -type d 2>/dev/null | fzf)'
 
 # could be added as aliases
 # sudo xdg-open . # Opening the file browser from terminal as root (gnome file)
@@ -169,3 +174,9 @@ export GPG_TTY=$TTY # work with zsh and powerlevel10k, see https://thecesrom.dev
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+if [ -f "/etc/wsl.conf" ]; then
+    alias subl='"/mnt/c/Program Files/Sublime Text/sublime_text.exe"'
+    alias ssh='"/mnt/c/windows/System32/OpenSSH/ssh.exe"'
+    alias git='"/mnt/c/Program Files/Git/cmd/git.exe"'
+fi
