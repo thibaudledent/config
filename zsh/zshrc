@@ -178,5 +178,6 @@ export GPG_TTY=$TTY # work with zsh and powerlevel10k, see https://thecesrom.dev
 if [ -f "/etc/wsl.conf" ]; then
     alias subl='"/mnt/c/Program Files/Sublime Text/sublime_text.exe"'
     alias ssh='"/mnt/c/windows/System32/OpenSSH/ssh.exe"'
+    alias ssh-add='"/mnt/c/Windows/System32/OpenSSH/ssh-add.exe"'
     alias git='"/mnt/c/Program Files/Git/cmd/git.exe"'
 fi
