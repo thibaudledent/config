@@ -180,4 +180,8 @@ if [ -f "/etc/wsl.conf" ]; then
     alias ssh='"/mnt/c/windows/System32/OpenSSH/ssh.exe"'
     alias ssh-add='"/mnt/c/Windows/System32/OpenSSH/ssh-add.exe"'
     alias git='"/mnt/c/Program Files/Git/cmd/git.exe"'
+    alias java='"/mnt/c/Program Files/Eclipse Adoptium/jdk-17.0.12.7-hotspot/bin/java.exe"'
+    alias mvn="PowerShell.exe mvn"
+    alias npm='"/mnt/c/Program Files/nodejs/npm"'
+    alias node='"/mnt/c/Program Files/nodejs/node.exe"'
 fi
