@@ -56,38 +56,6 @@ then
     export ARTIFACTORY_PASSWORD=${ARTIFACTORY_PASSWORD:-$(grep '<password' ~/.m2/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
 fi
 
-# JAVA
-function setjdk() {
-    if [ $# -ne 0 ]; then
-        removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'
-        if [ -n "${JAVA_HOME+x}" ]; then
-            removeFromPath "$JAVA_HOME"
-        fi
-        if [[ "$(uname)" == "Darwin" ]]; then
-            JAVA_HOME=$(/usr/libexec/java_home -v "$@")
-        else
-            JAVA_HOME="/usr/lib/jvm/"$@"-amd64"
-        fi
-        export JAVA_HOME
-        PATH=$JAVA_HOME/bin:$PATH
-        export PATH
-    fi
-}
-
-function removeFromPath() {
-    PATH=$(echo "$PATH" | sed -E -e "s;:$1;;" -e "s;$1:?;;")
-    export PATH
-}
-
-# For Ubuntu: usage of setjdk (see the folder name in `ls /usr/lib/jvm/`):
-# setjdk java-14-openjdk
-# setjdk adoptopenjdk-15-hotspot
-# ------
-# if `java --version` does not return the correct version, it
-# might be that `where java` returns several path. If yes,
-# you can remove the other ones (e.g. `sudo rm /bin/java`)
-setjdk temurin-22-jdk
-
 # KEYS (Ubuntu & Mac OS X when using zsh)
 # Bind key with "ctrl + u" to erase from the cursor position to the beginning of the line, see https://clementc.github.io/blog/2018/01/25/moving_cli/
 bindkey \^U backward-kill-line
@@ -144,17 +112,14 @@ alias update-all-repos="bash ~/update-all-repos.sh"
 alias create-jira="python3 ~/create-jira.py"
 
 # other aliases
-if [[ "$(uname)" == "Darwin" ]]; then
-     alias typora="open -a typora"
-fi
-
 if [ -f "/etc/wsl.conf" ]; then
-    CUSTOM_HOME="/mnt/c/Users/ledentth/"
+    CUSTOM_HOME=$(wslpath $(cmd.exe /C "echo %USERPROFILE%" 2>/dev/null | tr -d '\r'))
+    export CUSTOM_HOME
 else
     CUSTOM_HOME=$HOME
 fi
 alias ccode="code \$( find \$CUSTOM_HOME/ 2>/dev/null | fzf )" # to exclude a path, use '-not -path "$HOME/.m2/*"
-alias ccd='cd $( find $CUSTOM_HOME/Documents/ -type d 2>/dev/null | fzf)'
+alias ccd='cd $( find $CUSTOM_HOME/Documents/ -type d -maxdepth 4 2>/dev/null | fzf)'
 
 # could be added as aliases
 # sudo xdg-open . # Opening the file browser from terminal as root (gnome file)
@@ -176,12 +141,25 @@ export GPG_TTY=$TTY # work with zsh and powerlevel10k, see https://thecesrom.dev
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 if [ -f "/etc/wsl.conf" ]; then
-    alias subl='"/mnt/c/Program Files/Sublime Text/sublime_text.exe"'
-    alias ssh='"/mnt/c/windows/System32/OpenSSH/ssh.exe"'
-    alias ssh-add='"/mnt/c/Windows/System32/OpenSSH/ssh-add.exe"'
-    alias git='"/mnt/c/Program Files/Git/cmd/git.exe"'
-    alias java='"/mnt/c/Program Files/Eclipse Adoptium/jdk-17.0.12.7-hotspot/bin/java.exe"'
-    alias mvn="PowerShell.exe mvn"
-    alias npm='"/mnt/c/Program Files/nodejs/npm"'
-    alias node='"/mnt/c/Program Files/nodejs/node.exe"'
+    alias code="'$(wslpath "$(where.exe code | head -n 1 | tr -d '\r')")'"
+    alias subl="'$(wslpath "$(where.exe subl | tr -d '\r')")'"
+    alias ssh="'$(wslpath "$(where.exe ssh | tr -d '\r')")'"
+    alias ssh-add="'$(wslpath "$(where.exe ssh-add | tr -d '\r')")'"
+    alias git="'$(wslpath "$(where.exe git | tr -d '\r')")'"
+    alias java="'$(wslpath "$(where.exe java | grep 17 | tr -d '\r')")'" # works from wsl with choco.exe install java
+    alias mvn="PowerShell.exe mvn" # works from wsl with choco.exe install mvn
+    alias intellij-idea='"$(ls -d "/mnt/c/Program Files/JetBrains/IntelliJ IDEA"* | sort -V | tail -n1)/bin/idea64.exe"'
+    alias npm="'$(wslpath "$(where.exe npm | head -n 1 | tr -d '\r')")'"
+    alias node="'$(wslpath "$(where.exe node | tr -d '\r')")'"
 fi
+
+# JAVA
+# THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+if [ -f "/etc/wsl.conf" ];
+then
+  #export SDKMAN_DIR="/mnt/c/programs/sdkman"
+else
+  export SDKMAN_DIR="$HOME/.sdkman"
+fi
+[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && sdk default java 17.0.12-oracle &> /dev/null

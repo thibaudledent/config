@@ -2,15 +2,14 @@
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
   <servers>
     <server>
-      <id>artifactory</id>
+      <id>custom-artifactory</id>
       <username>USER_LOGIN</username>
       <password>USER_PASSWORD</password>
     </server>
   </servers>
   <mirrors>
     <mirror>
-      <id>artifactory</id>
-      <name>Artifactory</name>
+      <id>custom-artifactory</id>
       <mirrorOf>*</mirrorOf>
       <url>ARTIFACTORY_URL</url>
     </mirror>
