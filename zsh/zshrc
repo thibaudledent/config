@@ -141,10 +141,12 @@ export GPG_TTY=$TTY # work with zsh and powerlevel10k, see https://thecesrom.dev
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 if [ -f "/etc/wsl.conf" ]; then
-    alias code="'$(wslpath "$(where.exe code | head -n 1 | tr -d '\r')")'"
+    #code() {
+    #    explorer.exe "vscode://file/$(wslpath -w "${PWD}/$1")"
+    #}
     alias subl="'$(wslpath "$(where.exe subl | tr -d '\r')")'"
-    alias ssh="'$(wslpath "$(where.exe ssh | tr -d '\r')")'"
-    alias ssh-add="'$(wslpath "$(where.exe ssh-add | tr -d '\r')")'"
+    #alias ssh="'$(wslpath "$(where.exe ssh | tr -d '\r')")'"
+    #alias ssh-add="'$(wslpath "$(where.exe ssh-add | tr -d '\r')")'"
     alias git="'$(wslpath "$(where.exe git | tr -d '\r')")'"
     alias java="'$(wslpath "$(where.exe java | grep 17 | tr -d '\r')")'" # works from wsl with choco.exe install java
     alias mvn="PowerShell.exe mvn" # works from wsl with choco.exe install mvn

@@ -1,3 +1,11 @@
 .DS_Store
-settings_with_api_key.xml
-scripts/create-jira.yaml
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Config files
+maven/settings_with_api_key.xml
+jira-settings.yaml
