@@ -7,7 +7,7 @@ LN=$(which ln)
 LN_OPTS="-f -s -v"
 
 # Tools
-sudo apt update && sudo apt install tldr unzip zip zsh fzf terminator curl -y
+sudo apt update && sudo apt install tldr unzip zip zsh fzf fd-find terminator curl -y
 
 # ZSH
 if [ ! -d "$HOME/.oh-my-zsh" ];
