@@ -29,7 +29,10 @@ fi
 REPOSITORY_PATH="$PWD"
 echo "Path to update: ${REPOSITORY_PATH}"
 
-REPOSITORY=$(find "${REPOSITORY_PATH}" -type d | grep -v '_git' | grep 'git' | sed 's#.git.*##g' | sort --unique)
+REPOSITORY=$(find "${REPOSITORY_PATH}" -type d \
+    -path "*/node_modules" -prune -o \
+    -type d -name "*git*" ! -name "*_git*" \
+    -print | sed 's#\.git.*##g' | sort --unique)
 
 PARALLEL_CMD=$(command -v parallel)
 if [ -z "${PARALLEL_CMD}" ]; then
