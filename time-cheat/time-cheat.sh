@@ -1,21 +1,11 @@
 #!/usr/bin/env bash
 
-#  Extract JIRA_URL from jira-settings.yaml file
-PARENT_DIR=$(echo "$PWD" | sed 's/\/time-cheat.sh$//')
-if [ -f "${PARENT_DIR}/jira-settings.yaml" ]; then
-  JIRA_URL=$(grep "JIRA_URL=" "${PARENT_DIR}/jira-settings.yaml" | cut -d'=' -f2)
-  if [ -z "$JIRA_URL" ]; then
-    echo "Error: Could not find JIRA_URL in ${PARENT_DIR}/jira-settings.yaml"
-    exit 1
-  fi
-else
-  echo "Error: ${PARENT_DIR}/jira-settings.yaml file not found"
-  exit 1
-fi
+#  Extract variables from jira-settings.yaml file
+PARENT_DIR=$(echo "$PWD" | sed 's/\/time-cheat$//')
+source "$PARENT_DIR/load-settings.sh" "$PARENT_DIR/jira-settings.yaml"
 
-JIRA_TOKEN=$1  # from https://jira.of-my-company.com/secure/ViewProfile.jspa?selectedTab=com.atlassian.pats.pats-plugin:jira-user-personal-access-tokens
-START_DATE=$2  # e.g. 2022-01-07
-GIT_DIRECTORY=$3  # e.g. /home/john/Documents
+START_DATE=$1  # e.g. 2022-01-07
+GIT_DIRECTORY=$2  # e.g. /home/john/Documents
 E_MAIL=${4:-$(git config user.email)}  # e.g. john.doe@company.com
 
 cd "$(dirname "$0")" || exit
@@ -34,6 +24,6 @@ for dates in $(sort /tmp/gitlog | awk '{print $2}' | uniq -c | awk '{print $2 "'
     NUMBER_OF_COMMITS_FOR_CURRENT_DATE_AND_JIRA_ISSUE=${jira_issue_with_number_of_commits[0]}
     JIRA_ISSUE=${jira_issue_with_number_of_commits[1]}
     TIME_TO_LOG=$(echo "scale=5;8 * $NUMBER_OF_COMMITS_FOR_CURRENT_DATE_AND_JIRA_ISSUE/$TOTAL_NUMBER_OF_COMMITS_FOR_CURRENT_DATE" | bc | awk '{printf "%.2f", $0}')
-    echo "$PWD/log-time-jira.sh $JIRA_TOKEN ${JIRA_ISSUE//[^A-Z-0-9]/} $TIME_TO_LOG $CURRENT_DATE"
+    echo "$PWD/log-time-jira.sh ${JIRA_ISSUE//[^A-Z-0-9]/} $TIME_TO_LOG $CURRENT_DATE"
   done
 done
