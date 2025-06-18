@@ -157,6 +157,7 @@ if [ -f "/etc/wsl.conf" ]; then
     alias intellij-idea='"$(ls -d "/mnt/c/Program Files/JetBrains/IntelliJ IDEA"* | sort -V | tail -n1)/bin/idea64.exe"'
     alias npm="'$(wslpath "$(where.exe npm | head -n 1 | tr -d '\r')")'"
     alias node="'$(wslpath "$(where.exe node | tr -d '\r')")'"
+    alias nvm="'$(wslpath "$(where.exe nvm | tr -d '\r')")'"
 fi
 
 # JAVA
