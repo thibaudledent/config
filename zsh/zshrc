@@ -121,9 +121,9 @@ fi
 alias ccode="code \$( find \$CUSTOM_HOME/ 2>/dev/null | fzf )" # to exclude a path, use '-not -path "$HOME/.m2/*"
 
 # can be replaced with: 'cd <CTRL + T>', which has the advantage of working with any command. For example, 'vim <CTRL + T>'. See also: https://github.com/sharkdp/fd?tab=readme-ov-file#using-fd-with-fzf
-alias ccd='cd $( find $CUSTOM_HOME/Documents/ -type d -maxdepth 4 2>/dev/null | fzf)'
-
- alias fd=fdfind
+alias ccd='cd "$(find "$CUSTOM_HOME/Documents" -maxdepth 4 \
+    -type d \( -name .git -prune \) -o -type d -print 2>/dev/null | fzf)"'
+alias fd=fdfind
  
 # could be added as aliases
 # sudo xdg-open . # Opening the file browser from terminal as root (gnome file)
