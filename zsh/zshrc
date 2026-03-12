@@ -151,21 +151,12 @@ if [ -f "/etc/wsl.conf" ]; then
     #alias ssh="'$(wslpath "$(where.exe ssh | tr -d '\r')")'"
     #alias ssh-add="'$(wslpath "$(where.exe ssh-add | tr -d '\r')")'"
     alias git="'$(wslpath "$(where.exe git | tr -d '\r')")'"
-    alias java="'$(wslpath "$(where.exe java | grep 21 | tr -d '\r')")'" # works from wsl with choco.exe install java
+    #alias ssh-add="'$(wslpath "$(where.exe ssh-add | tr -d '\r')")'"
+    #alias ssh-agent="'$(wslpath "$(where.exe ssh-agent | tr -d '\r')")'"
+    alias java="'$(wslpath "$(where.exe java | grep $(basename "$(cmd.exe /C 'echo %JAVA_HOME%' | tr -d '\r')" | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+') | tr -d '\r')")'" # works from wsl with choco.exe install java
     alias mvn="PowerShell.exe mvn" # works from wsl with choco.exe install mvn
     alias intellij-idea='"$(ls -d "/mnt/c/Program Files/JetBrains/IntelliJ IDEA"* | sort -V | tail -n1)/bin/idea64.exe"'
     alias npm="'$(wslpath "$(where.exe npm | head -n 1 | tr -d '\r')")'"
     alias node="'$(wslpath "$(where.exe node | tr -d '\r')")'"
     alias nvm="'$(wslpath "$(where.exe nvm | tr -d '\r')")'"
 fi
-
-# JAVA
-# THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-if [ -f "/etc/wsl.conf" ];
-then
-  #export SDKMAN_DIR="/mnt/c/programs/sdkman"
-else
-  export SDKMAN_DIR="$HOME/.sdkman"
-fi
-[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
-[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && sdk default java 17.0.12-oracle &> /dev/null
