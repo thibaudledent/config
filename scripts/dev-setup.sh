@@ -18,10 +18,11 @@ PREFS_FILE="$SCRIPT_DIR/.dev-setup-prefs"
 PACKAGES=(
     git curl wget unzip zip jq tree make build-essential
     tldr zsh fzf fd-find terminator
-    vscode sublime-text neovim
+    vscode sublime-text neovim intellij-idea-ce
     python3 pip nodejs npm temurin-17 temurin-21 temurin-25 go rust
     docker docker-compose tmux htop ripgrep bat shellcheck lazygit
     xclip xsel
+    antigravity
 )
 
 # ─────────────────────────────────────────────────────────────────
@@ -38,6 +39,7 @@ declare -A ALIAS_APT=(
     [build-essential]="build-essential"
     [pip]="python3-pip"
     [docker]="docker.io"
+    [intellij-idea-ce]="intellij-idea-community"
     [temurin-17]="temurin-17-jdk"
     [temurin-21]="temurin-21-jdk"
     [temurin-25]="temurin-25-jdk"
@@ -48,6 +50,7 @@ declare -A ALIAS_PACMAN=(
     [pip]="python-pip"
     [python3]="python"
     [fd-find]="fd"
+    [intellij-idea-ce]="intellij-idea-community-edition"
     [temurin-17]="jdk17-temurin"
     [temurin-21]="jdk21-temurin"
     [temurin-25]="jdk-temurin"
@@ -65,6 +68,7 @@ declare -A ALIAS_BREW=(
 # Format: "gpg_key_url|deb_line"
 # The codename placeholder __CODENAME__ is replaced at runtime.
 declare -A APT_REPOS=(
+    [antigravity]="https://dl.google.com/antigravity/gpg|https://dl.google.com/antigravity/deb stable main"
     [temurin-17]="https://packages.adoptium.net/artifactory/api/gpg/key/public|https://packages.adoptium.net/artifactory/deb __CODENAME__ main"
     [temurin-21]="https://packages.adoptium.net/artifactory/api/gpg/key/public|https://packages.adoptium.net/artifactory/deb __CODENAME__ main"
     [temurin-25]="https://packages.adoptium.net/artifactory/api/gpg/key/public|https://packages.adoptium.net/artifactory/deb __CODENAME__ main"
@@ -213,6 +217,10 @@ resolve() {
 
 install() {
     local friendly="$1"
+
+    # Skip if command already exists
+    if command_exists "$friendly"; then log_ok "$friendly already installed"; return 0; fi
+
     local pkg; pkg=$(resolve "$friendly")
 
     # Add apt repo if needed (only on apt-based systems)

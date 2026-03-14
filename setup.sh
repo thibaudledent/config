@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 set -Eeuxo pipefail
 
-# Script to create symlinks for the configuration files
-
-LN=$(which ln)
-LN_OPTS="-f -s -v"
-
 # GNOME EXTENSIONS
 bash "${PWD}"/scripts/install-gnome-extensions.sh
 
@@ -28,22 +23,19 @@ then
   # then log out and log back in
 fi
 
-# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
+# To create symlinks for the configuration and script files
+LN=$(which ln)
+LN_OPTS="-f -s -v"
 "$LN" $LN_OPTS "${PWD}"/zsh/zshrc ~/.zshrc
-# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 if [ -e ~/.config/terminator/config ]
 then
   "$LN" $LN_OPTS "${PWD}"/terminator/config ~/.config/terminator/config
 fi
 
 # SYMLINKS FOR SCRIPTS
-# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 "$LN" $LN_OPTS "${PWD}"/scripts/sort-json.sh ~/sort-json.sh
-# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 "$LN" $LN_OPTS "${PWD}"/scripts/update-all-repos.sh ~/update-all-repos.sh
-# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 "$LN" $LN_OPTS "${PWD}"/scripts/create-jira.py ~/create-jira.py
-# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 "$LN" $LN_OPTS "${PWD}"/scripts/recursive-file-reader ~/recursive-file-reader
 
 # MAVEN SETTINGS
@@ -70,7 +62,7 @@ then
   set -x
 
   mkdir -p ~/.m2
-  # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
+
   "$LN" $LN_OPTS "${PWD}"/maven/settings_with_api_key.xml ~/.m2/settings.xml
   if [ -f "/etc/wsl.conf" ]; then
     cp "${PWD}/maven/settings_with_api_key.xml" "$CUSTOM_HOME/.m2/settings.xml"
