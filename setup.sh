@@ -36,7 +36,7 @@ fi
 "$LN" $LN_OPTS "${PWD}"/scripts/sort-json.sh ~/sort-json.sh
 "$LN" $LN_OPTS "${PWD}"/scripts/update-all-repos.sh ~/update-all-repos.sh
 "$LN" $LN_OPTS "${PWD}"/scripts/create-jira.py ~/create-jira.py
-"$LN" $LN_OPTS "${PWD}"/scripts/recursive-file-reader ~/recursive-file-reader
+"$LN" $LN_OPTS "${PWD}"/scripts/recursive-file-reader.sh ~/recursive-file-reader.sh
 
 # MAVEN SETTINGS
 # Overriding your Maven user settings in ${user.home}/.m2/settings.xml
