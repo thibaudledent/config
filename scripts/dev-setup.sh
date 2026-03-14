@@ -47,13 +47,15 @@ declare -A ALIAS_PACMAN=(
     [build-essential]="base-devel"
     [pip]="python-pip"
     [python3]="python"
+    [fd-find]="fd"
     [temurin-17]="jdk17-temurin"
     [temurin-21]="jdk21-temurin"
-    [temurin-25]="jdk25-temurin"
+    [temurin-25]="jdk-temurin"
 )
 
 declare -A ALIAS_BREW=(
     [nodejs]="node"
+    [fd-find]="fd"
     [temurin-17]="temurin@17"
     [temurin-21]="temurin@21"
     [temurin-25]="temurin@25"

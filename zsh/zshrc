@@ -56,6 +56,65 @@ then
     export ARTIFACTORY_PASSWORD=${ARTIFACTORY_PASSWORD:-$(grep '<password' ~/.m2/settings.xml | cut -f2 -d">" | cut -f1 -d"<" | head -n1)}
 fi
 
+# JAVA
+function removeFromPath() {
+    PATH=$(echo "$PATH" | sed -E -e "s;:$1;;" -e "s;$1:?;;")
+    export PATH
+}
+
+function setjdk() {
+    if [ $# -eq 0 ]; then
+        echo "Usage: setjdk <version>  (e.g. setjdk 21, setjdk 25)"
+        return 1
+    fi
+
+    local version="$1"
+
+    # Clean previous JAVA_HOME from PATH
+    if [ -n "${JAVA_HOME+x}" ]; then
+        removeFromPath "$JAVA_HOME/bin"
+    fi
+
+    if [ -f "/etc/wsl.conf" ]; then
+        # WSL with Java installed on the Windows side (e.g. via Chocolatey)
+        # Update Windows JAVA_HOME and recompute the java alias
+        local win_java_home
+        win_java_home=$(cmd.exe /C "where java" 2>/dev/null | tr -d '\r' | grep "$version" | head -n1 | sed 's|\\bin\\java.exe||')
+        if [ -z "$win_java_home" ]; then
+            echo "Error: JDK $version not found on Windows. Check 'where.exe java'."
+            return 1
+        fi
+        # Set Windows JAVA_HOME (for tools like Maven running on Windows side)
+        cmd.exe /C "setx JAVA_HOME \"$win_java_home\"" >/dev/null 2>&1
+        JAVA_HOME=$(wslpath "$win_java_home")
+        export JAVA_HOME
+        # Recompute java alias to point to the correct Windows binary
+        alias java="'$(wslpath "$win_java_home/bin/java.exe")'"
+    elif [[ "$(uname)" == "Darwin" ]]; then
+        # MacOS
+        removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'
+        JAVA_HOME=$(/usr/libexec/java_home -v "$version")
+        export JAVA_HOME
+    else
+        # Linux
+        local jvm_dir
+        jvm_dir=$(find /usr/lib/jvm -maxdepth 1 -type d -name "*-${version}-*" 2>/dev/null | head -n1)
+        if [ -z "$jvm_dir" ]; then
+            echo "Error: JDK $version not found in /usr/lib/jvm/. Available JDKs:"
+            ls /usr/lib/jvm/
+            return 1
+        fi
+        JAVA_HOME="$jvm_dir"
+        export JAVA_HOME
+    fi
+
+    PATH=$JAVA_HOME/bin:$PATH
+    export PATH
+}
+
+# Default JDK
+setjdk 25
+
 # KEYS (Ubuntu & Mac OS X when using zsh)
 # Bind key with "ctrl + u" to erase from the cursor position to the beginning of the line, see https://clementc.github.io/blog/2018/01/25/moving_cli/
 bindkey \^U backward-kill-line
