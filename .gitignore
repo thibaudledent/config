@@ -9,3 +9,4 @@
 # Config files
 maven/settings_with_api_key.xml
 jira-settings.yaml
+scripts/.dev-setup-prefs

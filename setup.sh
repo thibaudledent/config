@@ -6,8 +6,11 @@ set -Eeuxo pipefail
 LN=$(which ln)
 LN_OPTS="-f -s -v"
 
-# Tools
-sudo apt update && sudo apt install tldr unzip zip zsh fzf fd-find terminator curl -y
+# GNOME EXTENSIONS
+bash "${PWD}"/scripts/install-gnome-extensions.sh
+
+# DEV ENVIRONMENT
+bash "${PWD}"/scripts/dev-setup.sh
 
 # ZSH
 if [ ! -d "$HOME/.oh-my-zsh" ];
@@ -25,27 +28,6 @@ then
   # then log out and log back in
 fi
 
-# SDK man (JAVA sdk and maven)
-if [ ! -f "$SDKMAN_DIR/bin/sdkman-init.sh" ];
-then
-  if [ -f "/etc/wsl.conf" ];
-  then
-    # todo fix install in WSL, error in intellij cannot find C:\programs\sdkman\candidates\java\...\bin\java.exe
-    #export SDKMAN_DIR="/mnt/c/programs/sdkman" && curl -s "https://get.sdkman.io" | bash
-    #source "$SDKMAN_DIR/bin/sdkman-init.sh"
-  else
-    curl -s "https://get.sdkman.io" | bash
-    source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-    sdk install java 23-tem
-
-    # todo move these lines out of else block when WSL install is fixed
-    echo "y" |sdk install java 17.0.12-oracle # y for yes to set as default jdk
-    echo "n" | sdk install java
-    sdk install maven
-  fi
-fi
-
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 "$LN" $LN_OPTS "${PWD}"/zsh/zshrc ~/.zshrc
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
@@ -58,15 +40,11 @@ fi
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 "$LN" $LN_OPTS "${PWD}"/scripts/sort-json.sh ~/sort-json.sh
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
-"$LN" $LN_OPTS "${PWD}"/scripts/find-my-commits.sh ~/find-my-commits.sh
-# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
-"$LN" $LN_OPTS "${PWD}"/scripts/generate-password.sh ~/generate-password.sh
-# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
-"$LN" $LN_OPTS "${PWD}"/scripts/create-note.sh ~/create-note.sh
-# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 "$LN" $LN_OPTS "${PWD}"/scripts/update-all-repos.sh ~/update-all-repos.sh
 # shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
 "$LN" $LN_OPTS "${PWD}"/scripts/create-jira.py ~/create-jira.py
+# shellcheck disable=SC2086 # ignore "Double quote to prevent globbing and word splitting" for $LN_OPTS
+"$LN" $LN_OPTS "${PWD}"/scripts/recursive-file-reader ~/recursive-file-reader
 
 # MAVEN SETTINGS
 # Overriding your Maven user settings in ${user.home}/.m2/settings.xml
@@ -100,3 +78,4 @@ then
 fi
 
 echo "Setup done!"
+echo "To try zsh immediately, type 'zsh' in your current terminal."
