@@ -2,7 +2,11 @@
 set -Eeuxo pipefail
 
 # GNOME EXTENSIONS
-bash "${PWD}"/scripts/install-gnome-extensions.sh
+if command -v gnome-shell &>/dev/null; then
+  bash "${PWD}"/scripts/install-gnome-extensions.sh
+else
+  echo "Error: gnome-shell not found, skipping GNOME extensions install."
+fi
 
 # DEV ENVIRONMENT
 bash "${PWD}"/scripts/dev-setup.sh
