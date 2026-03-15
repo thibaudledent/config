@@ -211,9 +211,8 @@ if [ -f "/etc/wsl.conf" ]; then
     alias subl="'$(wslpath "$(where.exe subl | tr -d '\r')")'"
     #alias ssh="'$(wslpath "$(where.exe ssh | tr -d '\r')")'"
     #alias ssh-add="'$(wslpath "$(where.exe ssh-add | tr -d '\r')")'"
-    alias git="'$(wslpath "$(where.exe git | tr -d '\r')")'"
-    #alias ssh-add="'$(wslpath "$(where.exe ssh-add | tr -d '\r')")'"
     #alias ssh-agent="'$(wslpath "$(where.exe ssh-agent | tr -d '\r')")'"
+    alias git="'$(wslpath "$(where.exe git | tr -d '\r')")'"
     alias java="'$(wslpath "$(where.exe java | grep $(basename "$(cmd.exe /C 'echo %JAVA_HOME%' 2>/dev/null | tr -d '\r')" | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+') | tr -d '\r')")'" # works from wsl with choco.exe install java
     alias mvn="PowerShell.exe mvn" # works from wsl with choco.exe install mvn
     alias intellij-idea='"$(ls -d "/mnt/c/Program Files/JetBrains/IntelliJ IDEA"* | sort -V | tail -n1)/bin/idea64.exe"'
