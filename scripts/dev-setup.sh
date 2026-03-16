@@ -10,6 +10,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PREFS_FILE="$SCRIPT_DIR/.dev-setup-prefs"
+FAILURES_FILE="${FAILURES_FILE:-$(mktemp)}"
+
+# ─────────────────────────────────────────────────────────────────
+# Shared logging
+# ─────────────────────────────────────────────────────────────────
+source "$SCRIPT_DIR/log-utils.sh"
 
 # ─────────────────────────────────────────────────────────────────
 # Packages — just names. Add or remove, nothing else to touch.
@@ -18,11 +24,11 @@ PREFS_FILE="$SCRIPT_DIR/.dev-setup-prefs"
 PACKAGES=(
     git curl wget unzip zip jq tree make build-essential
     tldr zsh fzf fd-find terminator
-    vscode sublime-text neovim intellij-idea-ce
+    vscode sublime-text neovim intellij-idea-ce antigravity
     python3 pip nodejs npm temurin-17 temurin-21 temurin-25 go rust
     docker docker-compose tmux htop ripgrep bat shellcheck lazygit
     xclip xsel
-    antigravity
+    flameshot firefox
 )
 
 # ─────────────────────────────────────────────────────────────────
@@ -68,29 +74,8 @@ declare -A ALIAS_BREW=(
 # Format: "gpg_key_url|deb_line"
 # The codename placeholder __CODENAME__ is replaced at runtime.
 declare -A APT_REPOS=(
-    [antigravity]="https://dl.google.com/antigravity/gpg|https://dl.google.com/antigravity/deb stable main"
-    [temurin-17]="https://packages.adoptium.net/artifactory/api/gpg/key/public|https://packages.adoptium.net/artifactory/deb __CODENAME__ main"
-    [temurin-21]="https://packages.adoptium.net/artifactory/api/gpg/key/public|https://packages.adoptium.net/artifactory/deb __CODENAME__ main"
-    [temurin-25]="https://packages.adoptium.net/artifactory/api/gpg/key/public|https://packages.adoptium.net/artifactory/deb __CODENAME__ main"
+    [adoptium]="https://packages.adoptium.net/artifactory/api/gpg/key/public|https://packages.adoptium.net/artifactory/deb __CODENAME__ main"
 )
-
-# ─────────────────────────────────────────────────────────────────
-# Colors & Logging
-# ─────────────────────────────────────────────────────────────────
-
-if [[ -t 1 ]]; then
-    RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
-    BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'
-    DIM='\033[2m'; RESET='\033[0m'
-else
-    RED='' GREEN='' YELLOW='' BLUE='' CYAN='' BOLD='' DIM='' RESET=''
-fi
-
-log_info()    { echo -e "${BLUE}[INFO]${RESET}  $*"; }
-log_ok()      { echo -e "${GREEN}[OK]${RESET}    $*"; }
-log_warn()    { echo -e "${YELLOW}[WARN]${RESET}  $*"; }
-log_error()   { echo -e "${RED}[ERR]${RESET}   $*" >&2; }
-log_section() { echo -e "\n${BOLD}${CYAN}── $* ──${RESET}\n"; }
 
 # ─────────────────────────────────────────────────────────────────
 # OS Detection
@@ -117,7 +102,7 @@ detect_os() {
     fi
 
     if $is_wsl; then OS="wsl"; fi
-    log_info "Detected: ${BOLD}$OS${RESET}"
+    log_info "Detected: ${_LOG_BOLD}$OS${_LOG_RESET}"
 }
 
 # ─────────────────────────────────────────────────────────────────
@@ -207,6 +192,33 @@ resolve() {
 }
 
 # ─────────────────────────────────────────────────────────────────
+# is_installed() — check if a package is already installed
+# ─────────────────────────────────────────────────────────────────
+
+is_installed() {
+    local friendly="$1"
+    local pkg; pkg=$(resolve "$friendly")
+
+    case "$OS" in
+        ubuntu|wsl)
+            dpkg -s "$pkg" &>/dev/null && return 0
+            ;;
+        arch)
+            pacman -Qi "$pkg" &>/dev/null && return 0
+            ;;
+        macos)
+            brew list "$pkg" &>/dev/null && return 0
+            brew list --cask "$pkg" &>/dev/null && return 0
+            ;;
+    esac
+
+    # Fallback: check if a command with the friendly name exists
+    command_exists "$friendly" && return 0
+
+    return 1
+}
+
+# ─────────────────────────────────────────────────────────────────
 # install()
 #
 # Fallback chains:
@@ -217,17 +229,13 @@ resolve() {
 
 install() {
     local friendly="$1"
-
-    # Skip if command already exists
-    if command_exists "$friendly"; then log_ok "$friendly already installed"; return 0; fi
-
     local pkg; pkg=$(resolve "$friendly")
 
     # Add apt repo if needed (only on apt-based systems)
-    if [[ "$OS" == "ubuntu" || "$OS" == "wsl" ]] && [[ -v "APT_REPOS[$friendly]" ]]; then
+    if [[ "$OS" == "ubuntu" || "$OS" == "wsl" ]] && [[ "$friendly" == temurin-* ]]; then
         local gpg_url deb_line
-        IFS='|' read -r gpg_url deb_line <<< "${APT_REPOS[$friendly]}"
-        add_apt_repo "$friendly" "$gpg_url" "$deb_line"
+        IFS='|' read -r gpg_url deb_line <<< "${APT_REPOS[adoptium]}"
+        add_apt_repo "adoptium" "$gpg_url" "$deb_line"
     fi
 
     case "$OS" in
@@ -280,7 +288,7 @@ select_packages() {
     if ! load_prefs; then
         for ((i = 0; i < total; i++)); do SELECTED[$i]=1; done
     else
-        echo -e "\n  ${DIM}Loaded saved preferences. Edit or ENTER to keep.${RESET}"
+        echo -e "\n  ${_LOG_DIM}Loaded saved preferences. Edit or ENTER to keep.${_LOG_RESET}"
     fi
 
     local cursor=0 scroll=0
@@ -297,15 +305,15 @@ select_packages() {
     while true; do
         tput clear 2>/dev/null || clear
         echo ""
-        echo -e "  ${BOLD}${CYAN}Select packages to install${RESET}"
-        echo -e "  ${DIM}↑/↓ Navigate   SPACE Toggle   A All   N None   ENTER Confirm${RESET}"
+        echo -e "  ${_LOG_BOLD}${_LOG_CYAN}Select packages to install${_LOG_RESET}"
+        echo -e "  ${_LOG_DIM}↑/↓ Navigate   SPACE Toggle   A All   N None   ENTER Confirm${_LOG_RESET}"
         echo ""
 
         for ((i = scroll; i < total && i < scroll + visible; i++)); do
             local mark=" "
-            if [[ "${SELECTED[$i]}" == "1" ]]; then mark="${GREEN}✔${RESET}"; fi
+            if [[ "${SELECTED[$i]}" == "1" ]]; then mark="${_LOG_GREEN}✔${_LOG_RESET}"; fi
             if (( i == cursor )); then
-                printf "  ${BOLD}${CYAN}>${RESET} [%b] ${BOLD}%-22s${RESET}\n" "$mark" "${PACKAGES[$i]}"
+                printf "  ${_LOG_BOLD}${_LOG_CYAN}>${_LOG_RESET} [%b] ${_LOG_BOLD}%-22s${_LOG_RESET}\n" "$mark" "${PACKAGES[$i]}"
             else
                 printf "    [%b] %-22s\n" "$mark" "${PACKAGES[$i]}"
             fi
@@ -315,7 +323,7 @@ select_packages() {
         for ((i = 0; i < total; i++)); do
             if [[ "${SELECTED[$i]}" == "1" ]]; then count=$((count + 1)); fi
         done
-        echo -e "\n  ${DIM}${count}/${total} selected${RESET}"
+        echo -e "\n  ${_LOG_DIM}${count}/${total} selected${_LOG_RESET}"
 
         IFS= read -rsn1 key
         case "$key" in
@@ -344,7 +352,7 @@ select_packages() {
 # ─────────────────────────────────────────────────────────────────
 
 main() {
-    echo -e "\n  ${BOLD}${CYAN}Developer Environment Setup${RESET}\n"
+    echo -e "\n  ${_LOG_BOLD}${_LOG_CYAN}Developer Environment Setup${_LOG_RESET}\n"
 
     detect_os
     select_packages
@@ -355,22 +363,30 @@ main() {
     if [[ "$OS" == "wsl" ]]; then ensure_chocolatey; fi
 
     log_section "Installing"
-    local ok=0 fail=0 skip=0
+    local ok=0 fail=0 skip=0 already=0
 
     for ((i = 0; i < ${#PACKAGES[@]}; i++)); do
         if [[ "${SELECTED[$i]}" != "1" ]]; then skip=$((skip + 1)); continue; fi
         local pkg="${PACKAGES[$i]}"
-        printf "  ${BLUE}▸${RESET} %s\n" "$pkg"
+
+        if is_installed "$pkg"; then
+            log_ok "$pkg (already installed)"
+            already=$((already + 1))
+            continue
+        fi
+
+        printf "  ${_LOG_BLUE}▸${_LOG_RESET} %s\n" "$pkg"
         if install "$pkg"; then
             log_ok "$pkg"; ok=$((ok + 1))
         else
             log_error "Failed: $pkg"; fail=$((fail + 1))
+            echo "$pkg" >> "$FAILURES_FILE"
         fi
     done
 
     echo ""
-    echo -e "  ${GREEN}${BOLD}Done!${RESET}  ✔ $ok  ○ $skip  ✘ $fail"
-    echo -e "  ${DIM}Prefs: $PREFS_FILE${RESET}\n"
+    echo -e "  ${_LOG_GREEN}${_LOG_BOLD}Done!${_LOG_RESET}  ✔ $ok  ● $already already installed  ○ $skip skipped  ✘ $fail failed"
+    echo -e "  ${_LOG_DIM}Prefs: $PREFS_FILE${_LOG_RESET}\n"
 }
 
 main "$@"

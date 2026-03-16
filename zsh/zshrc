@@ -113,7 +113,7 @@ function setjdk() {
 }
 
 # Default JDK
-setjdk 25
+setjdk 21
 
 # KEYS (Ubuntu & Mac OS X when using zsh)
 # Bind key with "ctrl + u" to erase from the cursor position to the beginning of the line, see https://clementc.github.io/blog/2018/01/25/moving_cli/
@@ -183,8 +183,12 @@ if ! command -v fd &>/dev/null; then
     alias fd=fdfind
 fi
 # can be replaced with: 'cd <CTRL + T>', which has the advantage of working with any command. For example, 'vim <CTRL + T>'. See also: https://github.com/sharkdp/fd?tab=readme-ov-file#using-fd-with-fzf
-alias ccd='cd "$(fd --type d . "$CUSTOM_HOME" 2>/dev/null | fzf)"'
-
+if [ -f "/etc/wsl.conf" ]; then
+    # fdfind is slow on WSL (NTFS I/O), fall back to find with prune
+    alias ccd='cd "$(find "$CUSTOM_HOME/Documents" -maxdepth 4 -type d \( -name .git -o -name node_modules -o -name target -o -name build -o -name dist -o -name .next -o -name .gradle -o -name .mvn -o -name out -o -name logs \) -prune -o -type d -print 2>/dev/null | fzf)"'
+else
+    alias ccd='cd "$($(command -v fdfind || command -v fd) --type d . "$CUSTOM_HOME" 2>/dev/null | fzf)"'
+fi
 # could be added as aliases
 # sudo xdg-open . # Opening the file browser from terminal as root (gnome file)
 # kill -9 $(ps aux | grep -i gpg-agent | grep -v grep | awk '{print $2}')

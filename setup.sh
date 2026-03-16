@@ -1,19 +1,30 @@
 #!/usr/bin/env bash
-set -Eeuxo pipefail
+set -Eeuo pipefail
+
+source "${PWD}/scripts/log-utils.sh"
+
+log_section "Setup"
 
 # GNOME EXTENSIONS
+log_section "GNOME Extensions"
+
 if command -v gnome-shell &>/dev/null; then
   bash "${PWD}"/scripts/install-gnome-extensions.sh
 else
-  echo "Error: gnome-shell not found, skipping GNOME extensions install."
+  log_warn "gnome-shell not found, skipping GNOME extensions install."
 fi
 
 # DEV ENVIRONMENT
+log_section "Dev Environment"
+
+DEV_FAILURES_FILE=$(mktemp)
+export FAILURES_FILE="$DEV_FAILURES_FILE"
 bash "${PWD}"/scripts/dev-setup.sh
 
 # ZSH
 if [ ! -d "$HOME/.oh-my-zsh" ];
 then
+  log_info "Installing Oh My Zsh and plugins..."
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
   git clone https://github.com/zsh-users/zsh-autosuggestions.git ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
@@ -24,8 +35,11 @@ then
   sudo wget -P /usr/local/share/fonts https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
   # make zsh your default shell
   chsh -s "$(which zsh)"
-  # then log out and log back in
+else
+  log_ok "Oh My Zsh already installed"
 fi
+
+log_section "Symlinks"
 
 # To create symlinks for the configuration and script files
 LN=$(which ln)
@@ -41,8 +55,11 @@ fi
 "$LN" $LN_OPTS "${PWD}"/scripts/update-all-repos.sh ~/update-all-repos.sh
 "$LN" $LN_OPTS "${PWD}"/scripts/create-jira.py ~/create-jira.py
 "$LN" $LN_OPTS "${PWD}"/scripts/recursive-file-reader.sh ~/recursive-file-reader.sh
+log_ok "Symlinks created"
 
 # MAVEN SETTINGS
+log_section "Maven"
+
 # Overriding your Maven user settings in ${user.home}/.m2/settings.xml
 if [ -f "/etc/wsl.conf" ];
 then
@@ -71,7 +88,23 @@ then
   if [ -f "/etc/wsl.conf" ]; then
     cp "${PWD}/maven/settings_with_api_key.xml" "$CUSTOM_HOME/.m2/settings.xml"
   fi
+  log_ok "Maven settings configured"
+else
+  log_ok "Maven settings already present"
 fi
 
-echo "Setup done!"
-echo "To try zsh immediately, type 'zsh' in your current terminal."
+
+# SUMMARY
+log_section "Summary"
+
+# Collect and display failures from dev-setup.sh
+if [ -s "$DEV_FAILURES_FILE" ]; then
+    mapfile -t failures < "$DEV_FAILURES_FILE"
+    log_failures "${failures[@]}"
+fi
+rm -f "$DEV_FAILURES_FILE"
+
+log_ok "Setup done!"
+echo ""
+log_info "Log out and log back in to start using zsh."
+log_info "To try it immediately, type 'zsh' in your current terminal."

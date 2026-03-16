@@ -6,16 +6,9 @@
 
 set -euo pipefail
 
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-RED='\033[0;31m'
-NC='\033[0m'
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-info()    { echo -e "${BLUE}[INFO]${NC}  $*"; }
-success() { echo -e "${GREEN}[OK]${NC}    $*"; }
-warn()    { echo -e "${YELLOW}[WARN]${NC}  $*"; }
-error()   { echo -e "${RED}[ERROR]${NC} $*"; exit 1; }
+source "$SCRIPT_DIR/log-utils.sh"
 
 EXTENSIONS_DIR="$HOME/.local/share/gnome-shell/extensions"
 
@@ -31,12 +24,14 @@ declare -A EXTENSIONS=(
 # ─── Preflight checks ────────────────────────────────────────────────────────
 check_gnome() {
     if ! command -v gnome-shell &>/dev/null; then
-        error "gnome-shell not found. GNOME does not appear to be installed."
+        log_error "gnome-shell not found. GNOME does not appear to be installed."
+        exit 1
     fi
 
     local current_desktop="${XDG_CURRENT_DESKTOP:-}"
     if [[ ! "$current_desktop" =~ GNOME ]]; then
-        error "GNOME is not the active desktop environment (XDG_CURRENT_DESKTOP=${current_desktop:-unset}). Please run this script from a GNOME session."
+        log_error "GNOME is not the active desktop environment (XDG_CURRENT_DESKTOP=${current_desktop:-unset}). Please run this script from a GNOME session."
+        exit 1
     fi
 }
 
@@ -46,10 +41,11 @@ detect_distro() {
         case "$ID" in
             arch|endeavouros|manjaro) echo "arch" ;;
             ubuntu|pop|linuxmint)     echo "ubuntu" ;;
-            *) error "Unsupported distro: $ID" ;;
+            *) log_error "Unsupported distro: $ID"; exit 1 ;;
         esac
     else
-        error "Cannot detect distribution (missing /etc/os-release)."
+        log_error "Cannot detect distribution (missing /etc/os-release)."
+        exit 1
     fi
 }
 
@@ -59,19 +55,19 @@ ensure_dbus() {
         local uid
         uid="$(id -u)"
         export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/${uid}/bus"
-        info "Set DBUS_SESSION_BUS_ADDRESS to $DBUS_SESSION_BUS_ADDRESS"
+        log_info "Set DBUS_SESSION_BUS_ADDRESS to $DBUS_SESSION_BUS_ADDRESS"
     fi
 }
 
 # ─── Install gnome-shell-extension-installer ─────────────────────────────────
 ensure_installer() {
     if command -v gnome-shell-extension-installer &>/dev/null; then
-        success "gnome-shell-extension-installer already available."
+        log_ok "gnome-shell-extension-installer already available."
         return
     fi
 
     local distro="$1"
-    info "Installing gnome-shell-extension-installer…"
+    log_info "Installing gnome-shell-extension-installer…"
 
     if [ "$distro" = "arch" ]; then
         yay -S --needed --noconfirm gnome-shell-extension-installer
@@ -82,8 +78,8 @@ ensure_installer() {
     fi
 
     command -v gnome-shell-extension-installer &>/dev/null \
-        || error "Failed to install gnome-shell-extension-installer."
-    success "gnome-shell-extension-installer installed."
+        || { log_error "Failed to install gnome-shell-extension-installer."; exit 1; }
+    log_ok "gnome-shell-extension-installer installed."
 }
 
 # ─── Compile GSettings schemas for an extension ─────────────────────────────
@@ -93,9 +89,9 @@ compile_schemas() {
 
     if [ -d "$schemas_dir" ]; then
         if [ ! -f "$schemas_dir/gschemas.compiled" ]; then
-            info "Compiling GSettings schemas for $uuid…"
+            log_info "Compiling GSettings schemas for $uuid…"
             glib-compile-schemas "$schemas_dir"
-            success "Schemas compiled."
+            log_ok "Schemas compiled."
         fi
     fi
 }
@@ -105,21 +101,21 @@ install_extension() {
     local uuid="$1"
     local ext_id="$2"
 
-    info "Processing $uuid (ID: $ext_id)…"
+    log_info "Processing $uuid (ID: $ext_id)…"
 
     if gnome-extensions list 2>/dev/null | grep -qF "$uuid"; then
-        success "$uuid already installed."
+        log_ok "$uuid already installed."
     else
         gnome-shell-extension-installer "$ext_id" --yes
-        success "$uuid installed."
+        log_ok "$uuid installed."
     fi
 
     compile_schemas "$uuid"
 
     if gnome-extensions enable "$uuid" 2>/dev/null; then
-        success "$uuid enabled."
+        log_ok "$uuid enabled."
     else
-        warn "$uuid could not be enabled now — a session restart may be needed."
+        log_warn "$uuid could not be enabled now — a session restart may be needed."
     fi
 }
 
@@ -130,11 +126,11 @@ main() {
 
     local version
     version="$(gnome-shell --version | grep -oP '[\d.]+')"
-    info "GNOME Shell version: $version"
+    log_info "GNOME Shell version: $version"
 
     local distro
     distro="$(detect_distro)"
-    info "Detected distro family: $distro"
+    log_info "Detected distro family: $distro"
 
     ensure_installer "$distro"
 
@@ -143,10 +139,10 @@ main() {
     done
 
     echo ""
-    success "All extensions installed and enabled."
-    info "Restart GNOME Shell to activate everything:"
-    info "  Wayland → Log out and back in"
-    info "  X11     → Alt+F2 → r → Enter"
+    log_ok "All extensions installed and enabled."
+    log_info "Restart GNOME Shell to activate everything:"
+    log_info "  Wayland → Log out and back in"
+    log_info "  X11     → Alt+F2 → r → Enter"
 }
 
 main "$@"
