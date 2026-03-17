@@ -15,7 +15,7 @@ else
 fi
 
 # DEV ENVIRONMENT
-log_section "Dev Environment"
+log_section "Installing base tools..."
 
 DEV_FAILURES_FILE=$(mktemp)
 export FAILURES_FILE="$DEV_FAILURES_FILE"
@@ -93,6 +93,51 @@ else
   log_ok "Maven settings already present"
 fi
 
+# EDITOR SETTINGS
+log_section "Editor Settings"
+
+# VS Code - settings.json
+if [ -f "/etc/wsl.conf" ]; then
+  VSCODE_DIR="$CUSTOM_HOME/AppData/Roaming/Code/User"
+else
+  VSCODE_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/Code/User"
+fi
+if [ -d "$(dirname "$VSCODE_DIR")" ]; then
+  mkdir -p "$VSCODE_DIR"
+  if [ ! -f "$VSCODE_DIR/settings.json" ]; then
+    echo '{ "editor.renderWhitespace": "all" }' > "$VSCODE_DIR/settings.json"
+    log_ok "VS Code settings created"
+  elif ! grep -q "renderWhitespace" "$VSCODE_DIR/settings.json"; then
+    # Insert before the last closing brace
+    sed -i '$ s/}$/,\n  "editor.renderWhitespace": "all"\n}/' "$VSCODE_DIR/settings.json"
+    log_ok "VS Code settings updated"
+  else
+    log_ok "VS Code settings already configured"
+  fi
+else
+  log_warn "VS Code config directory not found, skipping"
+fi
+
+# Sublime Text - Preferences.sublime-settings
+if [ -f "/etc/wsl.conf" ]; then
+  SUBL_DIR="$CUSTOM_HOME/AppData/Roaming/Sublime Text/Packages/User"
+else
+  SUBL_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/sublime-text/Packages/User"
+fi
+if [ -d "$(dirname "$SUBL_DIR")" ]; then
+  mkdir -p "$SUBL_DIR"
+  if [ ! -f "$SUBL_DIR/Preferences.sublime-settings" ]; then
+    echo '{ "draw_white_space": "all" }' > "$SUBL_DIR/Preferences.sublime-settings"
+    log_ok "Sublime Text settings created"
+  elif ! grep -q "draw_white_space" "$SUBL_DIR/Preferences.sublime-settings"; then
+    sed -i '$ s/}$/,\n  "draw_white_space": "all"\n}/' "$SUBL_DIR/Preferences.sublime-settings"
+    log_ok "Sublime Text settings updated"
+  else
+    log_ok "Sublime Text settings already configured"
+  fi
+else
+  log_warn "Sublime Text config directory not found, skipping"
+fi
 
 # SUMMARY
 log_section "Summary"
