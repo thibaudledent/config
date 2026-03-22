@@ -55,6 +55,7 @@ fi
 "$LN" $LN_OPTS "${PWD}"/scripts/update-all-repos.sh ~/update-all-repos.sh
 "$LN" $LN_OPTS "${PWD}"/scripts/create-jira.py ~/create-jira.py
 "$LN" $LN_OPTS "${PWD}"/scripts/recursive-file-reader.sh ~/recursive-file-reader.sh
+"$LN" $LN_OPTS "${PWD}"/scripts/compress-docx.sh ~/compress-docx.sh
 log_ok "Symlinks created"
 
 # MAVEN SETTINGS
