@@ -28,7 +28,7 @@ PACKAGES=(
     python3 pip nodejs npm temurin-17 temurin-21 temurin-25 go rust
     docker docker-compose tmux htop ripgrep bat shellcheck lazygit
     xclip xsel
-    flameshot firefox
+    flameshot firefox meld
 )
 
 # ─────────────────────────────────────────────────────────────────
