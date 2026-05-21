@@ -67,7 +67,9 @@ declare -A ALIAS_PACMAN=(
     [pip]="python-pip"
     [python3]="python"
     [fd-find]="fd"
-    [intellij-idea-ce]="intellij-idea-community-edition"
+    [vscode]="visual-studio-code"
+    [intellij-idea-ce]="intellij-idea"
+    [pip]="python"  # pip ships with the python formula on macOS — no separate package
     [temurin-17]="jdk17-temurin"
     [temurin-21]="jdk21-temurin"
     [temurin-25]="jdk-temurin"
@@ -158,7 +160,8 @@ ensure_homebrew() {
     command_exists brew && return 0
     log_info "Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    [[ -f /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+    [[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+    [[ -x /usr/local/bin/brew ]]    && eval "$(/usr/local/bin/brew shellenv)"
 }
 
 ensure_chocolatey() {
