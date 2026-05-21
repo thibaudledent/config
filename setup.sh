@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-# macOS ships bash 3.2; we need 4+ for `declare -A` in dev-setup.sh
-if [ "${BASH_VERSINFO:-0}" -lt 4 ] && [ "$(uname)" = "Darwin" ]; then
-  command -v brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  brew list bash >/dev/null 2>&1 || brew install bash
-  exec "$(brew --prefix)/bin/bash" "$0" "$@"
-fi
-
 set -Eeuo pipefail
 
 source "${PWD}/scripts/log-utils.sh"

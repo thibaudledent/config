@@ -6,6 +6,14 @@
 # Usage:    chmod +x dev-setup.sh && ./dev-setup.sh
 #
 
+# Requires bash 4+ for `declare -A`. macOS ships bash 3.2 — bootstrap a newer one.
+if [ "${BASH_VERSINFO:-0}" -lt 4 ] && [ "$(uname)" = "Darwin" ]; then
+    command -v brew >/dev/null || /bin/bash -c \
+        "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    brew list bash >/dev/null 2>&1 || brew install bash
+    exec "$(brew --prefix)/bin/bash" "$0" "$@"
+fi
+
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
