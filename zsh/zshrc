@@ -38,6 +38,10 @@ setopt HIST_BEEP                 # Beep when accessing nonexistent history.
 
 source "$ZSH"/oh-my-zsh.sh
 
+# BASH update for MacOSX
+if [[ "$(uname)" == "Darwin" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 # MAVEN
 # Get the Maven directory. E.g. /usr/local/Cellar/maven/3.6.3_1/libexec (Mac OS X, brew)
 if [ -e ~/.m2/settings.xml ]
@@ -223,4 +227,11 @@ if [ -f "/etc/wsl.conf" ]; then
     alias npm="'$(wslpath "$(where.exe npm | head -n 1 | tr -d '\r')")'"
     alias node="'$(wslpath "$(where.exe node | tr -d '\r')")'"
     alias nvm="'$(wslpath "$(where.exe nvm | tr -d '\r')")'"
+fi
+
+if [[ "$(uname)" == "Darwin" ]]; then
+    export NVM_DIR="$HOME/.nvm"
+    mkdir -p "$NVM_DIR"
+    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+    [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 fi

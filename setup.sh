@@ -146,7 +146,8 @@ log_section "Summary"
 
 # Collect and display failures from dev-setup.sh
 if [ -s "$DEV_FAILURES_FILE" ]; then
-    mapfile -t failures < "$DEV_FAILURES_FILE"
+    failures=()
+    while IFS= read -r line; do failures+=("$line"); done < "$DEV_FAILURES_FILE"
     log_failures "${failures[@]}"
 fi
 rm -f "$DEV_FAILURES_FILE"

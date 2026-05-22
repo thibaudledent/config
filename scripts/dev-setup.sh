@@ -36,10 +36,11 @@ PACKAGES=(
     git curl wget unzip zip jq tree make build-essential
     tldr zsh fzf fd-find terminator
     vscode sublime-text neovim intellij-idea-ce antigravity
-    python3 pip nodejs npm temurin-17 temurin-21 temurin-25 go rust
+    python3 pip nodejs npm temurin-17 temurin-21 temurin-25 maven go rust
     docker docker-compose tmux htop ripgrep bat shellcheck lazygit
     xclip xsel
     flameshot firefox meld
+    dbeaver vlc chromium spotify
 )
 
 # ─────────────────────────────────────────────────────────────────
@@ -56,6 +57,7 @@ declare -A ALIAS_APT=(
     [build-essential]="build-essential"
     [pip]="python3-pip"
     [docker]="docker.io"
+    [dbeaver]="dbeaver-ce"
     [intellij-idea-ce]="intellij-idea-community"
     [temurin-17]="temurin-17-jdk"
     [temurin-21]="temurin-21-jdk"
@@ -78,6 +80,7 @@ declare -A ALIAS_BREW=(
     [fd-find]="fd"
     [vscode]="visual-studio-code"
     [intellij-idea-ce]="intellij-idea"
+    [dbeaver]="dbeaver-community"
     [pip]="python"  # pip ships with the python formula on macOS — no separate package
     [temurin-17]="temurin@17"
     [temurin-21]="temurin@21"
