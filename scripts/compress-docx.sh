@@ -74,8 +74,8 @@ fi
 EXTS="png gif bmp tiff tif webp jpeg"
 [ "$EMF_CONVERTED" -eq 1 ] && EXTS="$EXTS emf"
 for ext in $EXTS; do
-    find "$TEMP_DIR/word/_rels" -name "*.rels" -exec sed -i "s/\.$ext/\.jpg/gI" {} +
-    find "$TEMP_DIR/word" -name "*.xml" -exec sed -i "s/\.$ext/\.jpg/gI" {} +
+    find "$TEMP_DIR/word/_rels" -name "*.rels" -exec sed -i "" "s/\.$ext/\.jpg/gI" {} +
+    find "$TEMP_DIR/word" -name "*.xml" -exec sed -i "" "s/\.$ext/\.jpg/gI" {} +
 done
 
 # 4. Repack the folder back into a .docx

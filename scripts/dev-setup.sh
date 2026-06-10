@@ -33,14 +33,13 @@ source "$SCRIPT_DIR/log-utils.sh"
 # ─────────────────────────────────────────────────────────────────
 
 PACKAGES=(
-    git curl wget unzip zip jq tree make build-essential
+    git curl wget unzip zip jq tree
     tldr zsh fzf fd-find terminator
     vscode sublime-text neovim intellij-idea-ce antigravity
-    python3 pip nodejs npm temurin-17 temurin-21 temurin-25 maven go rust
-    docker docker-compose tmux htop ripgrep bat shellcheck lazygit
-    xclip xsel
+    python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-25 maven
+    docker docker-compose tmux htop bat shellcheck
     flameshot firefox meld
-    dbeaver vlc chromium spotify
+    dbeaver vlc chromium spotify imagemagick
 )
 
 # ─────────────────────────────────────────────────────────────────

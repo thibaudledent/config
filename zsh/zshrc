@@ -38,10 +38,22 @@ setopt HIST_BEEP                 # Beep when accessing nonexistent history.
 
 source "$ZSH"/oh-my-zsh.sh
 
-# BASH update for MacOSX
 if [[ "$(uname)" == "Darwin" ]]; then
+    # BASH update for MacOSX
     eval "$(/opt/homebrew/bin/brew shellenv)"
+
+    # nvm
+    export NVM_DIR="$HOME/.nvm"
+    mkdir -p "$NVM_DIR"
+    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+    [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+
+    # Colima / Docker, see https://www.atamanroman.dev/colima-restcontainers-intellij-setup-on-macos/
+    export DOCKER_HOST=unix://${HOME}/.colima/default/docker.sock
+    export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
+    export TESTCONTAINERS_HOST_OVERRIDE=$(colima ls --json --profile default | jq -r '.address')
 fi
+
 # MAVEN
 # Get the Maven directory. E.g. /usr/local/Cellar/maven/3.6.3_1/libexec (Mac OS X, brew)
 if [ -e ~/.m2/settings.xml ]
@@ -203,35 +215,18 @@ fi
 export GPG_TTY=$TTY # work with zsh and powerlevel10k, see https://thecesrom.dev/2021/01/27/troubleshooting-gpg-signed-commits-on-macos/
 
 # FZF
-# if you are using .bashrc and debian (sudo apt install -y fzf):
-# source /usr/share/doc/fzf/examples/key-bindings.bash
-# source /usr/share/doc/fzf/examples/completion.bash
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh
+source <(fzf --zsh)
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 if [ -f "/etc/wsl.conf" ]; then
-    #code() {
-    #    explorer.exe "vscode://file/$(wslpath -w "${PWD}/$1")"
-    #}
     alias subl="'$(wslpath "$(where.exe subl | tr -d '\r')")'"
-    #alias ssh="'$(wslpath "$(where.exe ssh | tr -d '\r')")'"
-    #alias ssh-add="'$(wslpath "$(where.exe ssh-add | tr -d '\r')")'"
-    #alias ssh-agent="'$(wslpath "$(where.exe ssh-agent | tr -d '\r')")'"
     alias git="'$(wslpath "$(where.exe git | tr -d '\r')")'"
-    alias java="'$(wslpath "$(where.exe java | grep $(basename "$(cmd.exe /C 'echo %JAVA_HOME%' 2>/dev/null | tr -d '\r')" | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+') | tr -d '\r')")'" # works from wsl with choco.exe install java
-    alias mvn="PowerShell.exe mvn" # works from wsl with choco.exe install mvn
-    alias intellij-idea='"$(ls -d "/mnt/c/Program Files/JetBrains/IntelliJ IDEA"* | sort -V | tail -n1)/bin/idea64.exe"'
+    alias java="'$(wslpath "$(where.exe java | grep $(basename "$(cmd.exe /C 'echo %JAVA_HOME%' 2>/dev/null | tr -d '\r')" | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+') | tr -d '\r')")'"
+    alias mvn="PowerShell.exe mvn"
+    alias idea='"$(ls -d "/mnt/c/Program Files/JetBrains/IntelliJ IDEA"* | sort -V | tail -n1)/bin/idea64.exe"'
     alias npm="'$(wslpath "$(where.exe npm | head -n 1 | tr -d '\r')")'"
     alias node="'$(wslpath "$(where.exe node | tr -d '\r')")'"
     alias nvm="'$(wslpath "$(where.exe nvm | tr -d '\r')")'"
-fi
-
-if [[ "$(uname)" == "Darwin" ]]; then
-    export NVM_DIR="$HOME/.nvm"
-    mkdir -p "$NVM_DIR"
-    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-    [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 fi
