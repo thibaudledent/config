@@ -36,7 +36,7 @@ PACKAGES=(
     git curl wget unzip zip jq tree
     tldr zsh fzf fd-find terminator
     vscode sublime-text neovim intellij-idea-ce antigravity
-    python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-25 maven
+    python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-26 maven
     docker docker-compose tmux htop bat shellcheck
     flameshot firefox meld
     dbeaver vlc chromium spotify imagemagick
@@ -60,7 +60,7 @@ declare -A ALIAS_APT=(
     [intellij-idea-ce]="intellij-idea-community"
     [temurin-17]="temurin-17-jdk"
     [temurin-21]="temurin-21-jdk"
-    [temurin-25]="temurin-25-jdk"
+    [temurin-26]="temurin-26-jdk"
 )
 
 declare -A ALIAS_PACMAN=(
@@ -71,7 +71,7 @@ declare -A ALIAS_PACMAN=(
     [intellij-idea-ce]="intellij-idea-community-edition"
     [temurin-17]="jdk17-temurin"
     [temurin-21]="jdk21-temurin"
-    [temurin-25]="jdk-temurin"
+    [temurin-26]="jdk-temurin"
 )
 
 declare -A ALIAS_BREW=(
@@ -83,7 +83,7 @@ declare -A ALIAS_BREW=(
     [pip]="python"  # pip ships with the python formula on macOS — no separate package
     [temurin-17]="temurin@17"
     [temurin-21]="temurin@21"
-    [temurin-25]="temurin@25"
+    [temurin-26]="temurin"
 )
 
 # APT repos needed before installing certain packages.
