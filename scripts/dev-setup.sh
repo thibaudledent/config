@@ -34,7 +34,7 @@ source "$SCRIPT_DIR/log-utils.sh"
 
 PACKAGES=(
     git curl wget unzip zip jq tree
-    tldr zsh fzf fd-find terminator
+    tldr zsh fzf fd-find ripgrep terminator
     vscode sublime-text neovim intellij-idea-ce antigravity
     python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-26 maven
     docker docker-compose tmux htop bat shellcheck
