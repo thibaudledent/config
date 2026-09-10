@@ -2,7 +2,7 @@
 set -eEuxo pipefail
 
 # Default branch
-BRANCH="master"
+BRANCH="main"
 
 # Parse optional --branch argument
 while [[ $# -gt 0 ]]; do
