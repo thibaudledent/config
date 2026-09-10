@@ -146,7 +146,7 @@ alias gc="git commit"
 alias gcam="git commit -am"
 alias gcmsg="git commit -m"
 alias gco="git checkout"
-alias gcm="git checkout master"
+alias gcm="git checkout main"
 alias gcb="git checkout -b"
 alias gcp="git cherry-pick"
 alias gd="git --no-pager diff"
@@ -154,7 +154,7 @@ alias gf="git fetch"
 alias gfa="git fetch --all"
 alias gl="git pull"
 alias gm="git merge"
-alias gmom="git merge origin/master"
+alias gmom="git merge origin/main"
 alias gp="git push"
 alias gpu="git push --set-upstream origin \$(git branch | grep \* | sed 's/\* //')"
 alias gpo="git push origin "
@@ -167,7 +167,7 @@ alias gs="git status"
 alias gsta="git stash"
 alias gstp="git stash pop"
 alias glr="git ls-remote | grep refs/heads/ | cut -c 53-"
-alias gbdf="gbd \$(gb | grep -v \* | grep -v master | fzf -m)"
+alias gbdf="gbd \$(gb | grep -v \* | grep -v main | fzf -m)"
 alias gasf="git add \$(git status -s | sed -E 's/(^ M |^\?\? )//' | fzf)"
 alias gmof="git merge origin/\$(gf && glr | fzf)"
 alias glrf="gco \$(gf && glr | fzf)"
@@ -175,7 +175,7 @@ alias gcof="gco \$(gs | grep modified | sed -e 's/modified://' | fzf -m)"
 
 # Usage `gpmr prod "merge request title"`
 function gpmr() {
-    git push origin $(git branch --show-current) -o merge_request.target=${1:-master} -o merge_request.create -o merge_request.title="${2:-$(git log -1 --pretty=%B | head -n 1)}";
+    git push origin $(git branch --show-current) -o merge_request.target=${1:-main} -o merge_request.create -o merge_request.title="${2:-$(git log -1 --pretty=%B | head -n 1)}";
 }
 
 # scripts aliases
