@@ -36,7 +36,7 @@ PACKAGES=(
     git curl wget unzip zip jq tree
     tldr zsh fzf fd-find ripgrep terminator
     vscode sublime-text neovim intellij-idea-ce antigravity
-    python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-26 maven
+    python3 pip nodejs npm nvm opencode temurin-17 temurin-21 temurin-26 maven
     docker docker-compose tmux htop bat shellcheck
     flameshot firefox meld
     dbeaver vlc chromium spotify imagemagick
@@ -91,6 +91,13 @@ declare -A ALIAS_BREW=(
 # The codename placeholder __CODENAME__ is replaced at runtime.
 declare -A APT_REPOS=(
     [adoptium]="https://packages.adoptium.net/artifactory/api/gpg/key/public|https://packages.adoptium.net/artifactory/deb __CODENAME__ main"
+)
+
+# Packages installed the same way on every OS via `npm install -g`, rather
+# than through the per-OS package manager. Maps "friendly name" → "npm package".
+# This keeps updates simple everywhere: `npm update -g <npm package>`.
+declare -A NPM_PACKAGES=(
+    [opencode]="opencode-ai"
 )
 
 # ─────────────────────────────────────────────────────────────────
@@ -193,6 +200,7 @@ mgr_cask()   { brew install --cask "$1"; }
 mgr_snap()   { command_exists snap && sudo snap install "$1"; }
 mgr_yay()    { ensure_yay && yay -S --noconfirm "$1"; }
 mgr_choco()  { ensure_chocolatey; powershell.exe -Command "choco install $1 -y"; }
+mgr_npm()    { if [[ "$OS" == "macos" ]]; then npm install -g "$1"; else sudo npm install -g "$1"; fi; }
 
 # ─────────────────────────────────────────────────────────────────
 # resolve() — look up the real package name for this OS
@@ -214,6 +222,12 @@ resolve() {
 
 is_installed() {
     local friendly="$1"
+
+    if [[ -v "NPM_PACKAGES[$friendly]" ]]; then
+        command_exists "$friendly" && return 0
+        return 1
+    fi
+
     local pkg; pkg=$(resolve "$friendly")
 
     case "$OS" in
@@ -246,6 +260,16 @@ is_installed() {
 
 install() {
     local friendly="$1"
+
+    if [[ -v "NPM_PACKAGES[$friendly]" ]]; then
+        if ! command_exists npm; then
+            log_error "npm not found; install the 'npm' package first"
+            return 1
+        fi
+        mgr_npm "${NPM_PACKAGES[$friendly]}" && return 0
+        return 1
+    fi
+
     local pkg; pkg=$(resolve "$friendly")
 
     # Add apt repo if needed (only on apt-based systems)
