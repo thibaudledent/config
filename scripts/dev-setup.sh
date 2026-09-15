@@ -35,7 +35,7 @@ source "$SCRIPT_DIR/log-utils.sh"
 PACKAGES=(
     git curl wget unzip zip jq tree
     tldr zsh fzf fd-find ripgrep terminator
-    vscode sublime-text neovim intellij-idea-ce antigravity
+    vscode sublime-text neovim intellij-idea-ce antigravity opencode
     python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-26 maven
     docker docker-compose tmux htop bat shellcheck
     flameshot firefox meld
@@ -186,13 +186,14 @@ ensure_yay() {
     rm -rf "$tmp"
 }
 
-mgr_apt()    { sudo apt-get install -y "$1"; }
-mgr_pacman() { sudo pacman -S --noconfirm --needed "$1"; }
-mgr_brew()   { brew install "$1"; }
-mgr_cask()   { brew install --cask "$1"; }
-mgr_snap()   { command_exists snap && sudo snap install "$1"; }
-mgr_yay()    { ensure_yay && yay -S --noconfirm "$1"; }
-mgr_choco()  { ensure_chocolatey; powershell.exe -Command "choco install $1 -y"; }
+mgr_apt()          { sudo apt-get install -y "$1"; }
+mgr_pacman()       { sudo pacman -S --noconfirm --needed "$1"; }
+mgr_brew()         { brew install "$1"; }
+mgr_cask()         { brew install --cask "$1"; }
+mgr_snap()         { command_exists snap && sudo snap install "$1"; }
+mgr_snap_classic() { command_exists snap && sudo snap install "$1" --classic; }
+mgr_yay()          { ensure_yay && yay -S --noconfirm "$1"; }
+mgr_choco()        { ensure_chocolatey; powershell.exe -Command "choco install $1 -y"; }
 
 # ─────────────────────────────────────────────────────────────────
 # resolve() — look up the real package name for this OS
@@ -239,7 +240,7 @@ is_installed() {
 # install()
 #
 # Fallback chains:
-#   ubuntu/wsl → apt → snap → choco (wsl only)
+#   ubuntu/wsl → apt → snap → classic snap → choco (wsl only)
 #   arch       → pacman → yay
 #   macos      → brew → cask
 # ─────────────────────────────────────────────────────────────────
@@ -259,6 +260,7 @@ install() {
         ubuntu|wsl)
             mgr_apt "$pkg" && return 0
             mgr_snap "$pkg" && return 0
+            mgr_snap_classic "$pkg" && return 0
             if [[ "$OS" == "wsl" ]]; then mgr_choco "$pkg" && return 0; fi
             ;;
         arch)
