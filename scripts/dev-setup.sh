@@ -30,6 +30,7 @@ source "$SCRIPT_DIR/log-utils.sh"
 
 # ─────────────────────────────────────────────────────────────────
 # Packages — just names. Add or remove, nothing else to touch.
+# Sorted alphabetically below for the selector display.
 # ─────────────────────────────────────────────────────────────────
 
 PACKAGES=(
@@ -41,6 +42,7 @@ PACKAGES=(
     flameshot firefox meld
     dbeaver vlc chromium spotify imagemagick
 )
+mapfile -t PACKAGES < <(printf '%s\n' "${PACKAGES[@]}" | sort)
 
 # ─────────────────────────────────────────────────────────────────
 # Aliases — when a package name differs per OS, add it here.
