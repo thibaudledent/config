@@ -34,13 +34,22 @@ source "$SCRIPT_DIR/log-utils.sh"
 # ─────────────────────────────────────────────────────────────────
 
 PACKAGES=(
-    git curl wget unzip zip jq tree
-    tldr zsh fzf fd-find ripgrep terminator
+    # Core CLI utilities
+    git curl wget unzip zip jq tree tldr
+    # Shell & search tools
+    zsh fzf fd-find ripgrep bat shellcheck
+    # Terminal & system monitoring
+    terminator tmux htop
+    # Editors & IDEs
     vscode sublime-text neovim intellij-idea-ce antigravity opencode
+    # Languages & runtimes
     python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-26 maven
-    docker docker-compose tmux htop bat shellcheck
-    flameshot firefox meld
-    dbeaver vlc chromium spotify imagemagick
+    # Containers
+    docker docker-compose
+    # Browsers
+    firefox chromium
+    # Desktop apps & media
+    flameshot meld dbeaver vlc spotify imagemagick
 )
 mapfile -t PACKAGES < <(printf '%s\n' "${PACKAGES[@]}" | sort)
 
