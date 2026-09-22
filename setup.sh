@@ -46,6 +46,11 @@ log_section "Symlinks"
 LN=$(which ln)
 LN_OPTS="-f -s -v"
 "$LN" $LN_OPTS "${PWD}"/zsh/zshrc ~/.zshrc
+
+# NEOVIM
+mkdir -p ~/.config/nvim
+"$LN" $LN_OPTS "${PWD}"/nvim/init.lua ~/.config/nvim/init.lua
+
 if [ -e ~/.config/terminator/config ]
 then
   "$LN" $LN_OPTS "${PWD}"/terminator/config ~/.config/terminator/config
