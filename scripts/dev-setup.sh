@@ -95,6 +95,7 @@ declare -A ALIAS_BREW=(
     [temurin-17]="temurin@17"
     [temurin-21]="temurin@21"
     [temurin-26]="temurin"
+    [flameshot]="shottr"  # Flameshot doesn't run well on macOS — Shottr is the native equivalent
 )
 
 # APT repos needed before installing certain packages.
