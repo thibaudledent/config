@@ -100,11 +100,6 @@ declare -A ALIAS_BREW=(
     [flameshot]="shottr"  # Flameshot doesn't run well on macOS — Shottr is the native equivalent
 )
 
-# Packages that only exist on macOS — skipped (not failed) elsewhere.
-declare -A MACOS_ONLY=(
-    [spokenly]=1  # Voice-to-text dictation — Homebrew cask, no Linux build
-)
-
 # APT repos needed before installing certain packages.
 # Format: "gpg_key_url|deb_line"
 # The codename placeholder __CODENAME__ is replaced at runtime.
@@ -215,6 +210,65 @@ mgr_yay()          { ensure_yay && yay -S --noconfirm "$1"; }
 mgr_choco()        { ensure_chocolatey; powershell.exe -Command "choco install $1 -y"; }
 
 # ─────────────────────────────────────────────────────────────────
+# Custom installers — for apps not in any package manager on some OS.
+#   declare -A CUSTOM_INSTALL  maps "friendly name" → function name
+# The function replaces the package-manager chain for that package.
+# ─────────────────────────────────────────────────────────────────
+
+# Spokenly (https://spokenly.app) — voice dictation.
+#   macOS → Homebrew cask
+#   WSL   → winget on the Windows host
+#   Linux → .deb (Ubuntu/Debian) or AppImage (others), link read from spokenly.app/linux
+SPOKENLY_LINUX_PAGE="https://spokenly.app/linux"
+
+spokenly_linux_url() {
+    local ext="$1" arch
+    arch=$(uname -m)
+    case "$arch" in x86_64) arch="(amd64|x86_64)" ;; aarch64|arm64) arch="(arm64|aarch64)" ;; esac
+    curl -fsSL "$SPOKENLY_LINUX_PAGE" \
+        | grep -oE "https?://[^\"' <>]+\.${ext}" \
+        | grep -E "$arch" | head -n1
+}
+
+install_spokenly() {
+    case "$OS" in
+        macos)
+            mgr_cask spokenly
+            ;;
+        wsl)
+            powershell.exe -Command "winget install -e --id Spokenly.Spokenly --accept-source-agreements --accept-package-agreements"
+            ;;
+        ubuntu|arch)
+            local url tmp; tmp=$(mktemp -d)
+            if [[ "$OS" == "ubuntu" ]] && url=$(spokenly_linux_url deb) && [[ -n "$url" ]]; then
+                curl -fsSL -o "$tmp/spokenly.deb" "$url" \
+                    && sudo apt-get install -y "$tmp/spokenly.deb" || { rm -rf "$tmp"; return 1; }
+            elif url=$(spokenly_linux_url AppImage) && [[ -n "$url" ]]; then
+                mkdir -p "$HOME/.local/bin"
+                curl -fsSL -o "$HOME/.local/bin/spokenly" "$url" \
+                    && chmod +x "$HOME/.local/bin/spokenly" || { rm -rf "$tmp"; return 1; }
+                # AppImages need FUSE 2
+                if [[ "$OS" == "arch" ]]; then mgr_pacman fuse2 || true; fi
+            else
+                rm -rf "$tmp"
+                log_warn "Could not find a Spokenly download link — get it from $SPOKENLY_LINUX_PAGE"
+                return 1
+            fi
+            rm -rf "$tmp"
+            # Global hotkey needs access to input devices (takes effect after re-login)
+            if ! id -nG "$USER" | grep -qw input; then
+                sudo usermod -aG input "$USER" && log_info "Added $USER to 'input' group for Spokenly hotkey (log out/in)"
+            fi
+            ;;
+        *) return 1 ;;
+    esac
+}
+
+declare -A CUSTOM_INSTALL=(
+    [spokenly]=install_spokenly
+)
+
+# ─────────────────────────────────────────────────────────────────
 # resolve() — look up the real package name for this OS
 # ─────────────────────────────────────────────────────────────────
 
@@ -273,6 +327,11 @@ install() {
         local gpg_url deb_line
         IFS='|' read -r gpg_url deb_line <<< "${APT_REPOS[adoptium]}"
         add_apt_repo "adoptium" "$gpg_url" "$deb_line"
+    fi
+
+    if [[ -v "CUSTOM_INSTALL[$friendly]" ]]; then
+        "${CUSTOM_INSTALL[$friendly]}" && return 0
+        return 1
     fi
 
     case "$OS" in
@@ -406,12 +465,6 @@ main() {
     for ((i = 0; i < ${#PACKAGES[@]}; i++)); do
         if [[ "${SELECTED[$i]}" != "1" ]]; then skip=$((skip + 1)); continue; fi
         local pkg="${PACKAGES[$i]}"
-
-        if [[ -v "MACOS_ONLY[$pkg]" && "$OS" != "macos" ]]; then
-            log_info "$pkg (macOS only, skipping)"
-            skip=$((skip + 1))
-            continue
-        fi
 
         if is_installed "$pkg"; then
             log_ok "$pkg (already installed)"
