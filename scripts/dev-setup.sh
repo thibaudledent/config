@@ -50,6 +50,8 @@ PACKAGES=(
     firefox chromium
     # Desktop apps & media
     flameshot meld dbeaver vlc spotify imagemagick
+    # Voice dictation
+    spokenly
 )
 mapfile -t PACKAGES < <(printf '%s\n' "${PACKAGES[@]}" | sort)
 
@@ -96,6 +98,11 @@ declare -A ALIAS_BREW=(
     [temurin-21]="temurin@21"
     [temurin-26]="temurin"
     [flameshot]="shottr"  # Flameshot doesn't run well on macOS — Shottr is the native equivalent
+)
+
+# Packages that only exist on macOS — skipped (not failed) elsewhere.
+declare -A MACOS_ONLY=(
+    [spokenly]=1  # Voice-to-text dictation — Homebrew cask, no Linux build
 )
 
 # APT repos needed before installing certain packages.
@@ -399,6 +406,12 @@ main() {
     for ((i = 0; i < ${#PACKAGES[@]}; i++)); do
         if [[ "${SELECTED[$i]}" != "1" ]]; then skip=$((skip + 1)); continue; fi
         local pkg="${PACKAGES[$i]}"
+
+        if [[ -v "MACOS_ONLY[$pkg]" && "$OS" != "macos" ]]; then
+            log_info "$pkg (macOS only, skipping)"
+            skip=$((skip + 1))
+            continue
+        fi
 
         if is_installed "$pkg"; then
             log_ok "$pkg (already installed)"
