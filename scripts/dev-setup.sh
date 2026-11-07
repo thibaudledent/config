@@ -49,7 +49,7 @@ PACKAGES=(
     # Browsers
     firefox chromium
     # Desktop apps & media
-    flameshot meld dbeaver vlc spotify imagemagick
+    flameshot meld dbeaver vlc spotify imagemagick spokenly
 )
 mapfile -t PACKAGES < <(printf '%s\n' "${PACKAGES[@]}" | sort)
 
