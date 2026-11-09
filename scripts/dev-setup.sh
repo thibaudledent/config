@@ -52,6 +52,8 @@ PACKAGES=(
     firefox chromium
     # Desktop apps & media
     flameshot meld dbeaver vlc spotify imagemagick spokenly
+    # GNOME (Linux only — fails harmlessly on macOS/WSL)
+    gnome-shell-extension-manager
 )
 mapfile -t PACKAGES < <(printf '%s\n' "${PACKAGES[@]}" | sort)
 
