@@ -52,6 +52,8 @@ PACKAGES=(
     firefox chromium
     # Desktop apps & media
     flameshot meld dbeaver vlc spotify imagemagick spokenly
+    # GNOME (Linux only — fails harmlessly on macOS/WSL)
+    gnome-shell-extension-manager
 )
 mapfile -t PACKAGES < <(printf '%s\n' "${PACKAGES[@]}" | sort)
 
@@ -91,6 +93,7 @@ declare -A ALIAS_PACMAN=(
     [temurin-25]="jdk25-temurin"
     [temurin-27]="jdk-temurin"
     [claude]="claude-code"
+    [gnome-shell-extension-manager]="extension-manager"
 )
 
 declare -A ALIAS_BREW=(
