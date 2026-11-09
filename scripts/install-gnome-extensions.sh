@@ -19,6 +19,7 @@ declare -A EXTENSIONS=(
     ["Vitals@CoreCoding.com"]=1460
     ["tiling-assistant@leleat-on-github"]=3733
     ["simpleweather@romanlefler.com"]=8261
+    ["BingWallpaper@ineffable-gmail.com"]=1262
 )
 
 # ─── Preflight checks ────────────────────────────────────────────────────────
