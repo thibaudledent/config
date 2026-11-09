@@ -73,7 +73,7 @@ ensure_installer() {
         yay -S --needed --noconfirm gnome-shell-extension-installer
     else
         local url="https://raw.githubusercontent.com/brunelli/gnome-shell-extension-installer/master/gnome-shell-extension-installer"
-        sudo curl -sL "$url" -o /usr/local/bin/gnome-shell-extension-installer
+        sudo wget -qO /usr/local/bin/gnome-shell-extension-installer "$url"
         sudo chmod +x /usr/local/bin/gnome-shell-extension-installer
     fi
 
