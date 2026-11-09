@@ -59,6 +59,25 @@ ensure_dbus() {
     fi
 }
 
+# ─── Ensure curl is available (gnome-shell-extension-installer needs it) ─────
+ensure_curl() {
+    if command -v curl &>/dev/null; then
+        return
+    fi
+
+    local distro="$1"
+    log_info "curl not found, installing it…"
+
+    case "$distro" in
+        arch)   sudo pacman -S --needed --noconfirm curl ;;
+        ubuntu) sudo apt-get update -y && sudo apt-get install -y curl ;;
+    esac
+
+    command -v curl &>/dev/null \
+        || { log_error "Failed to install curl."; exit 1; }
+    log_ok "curl installed."
+}
+
 # ─── Install gnome-shell-extension-installer ─────────────────────────────────
 ensure_installer() {
     if command -v gnome-shell-extension-installer &>/dev/null; then
@@ -132,6 +151,7 @@ main() {
     distro="$(detect_distro)"
     log_info "Detected distro family: $distro"
 
+    ensure_curl "$distro"
     ensure_installer "$distro"
 
     for uuid in "${!EXTENSIONS[@]}"; do
