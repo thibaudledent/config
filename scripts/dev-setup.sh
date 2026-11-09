@@ -173,10 +173,14 @@ declare -A _apt_repos_added=()
 add_apt_repo() {
     local name="$1" gpg_url="$2" deb_line="$3"
     if [[ -v "_apt_repos_added[$name]" ]]; then return 0; fi
-    if [[ -f "/etc/apt/sources.list.d/${name}.list" ]]; then _apt_repos_added[$name]=1; return 0; fi
 
     log_info "Adding apt repository: $name"
     local codename; codename=$(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release)
+    # Brand-new releases often aren't published yet — fall back to the latest Ubuntu LTS
+    if [[ "$deb_line" == *__CODENAME__* ]] && ! wget -q --spider "${deb_line%% *}/dists/$codename/Release"; then
+        codename=$(ubuntu-distro-info --lts 2>/dev/null || echo noble)
+        log_warn "$name has no release for this distro yet, using $codename"
+    fi
     deb_line="${deb_line//__CODENAME__/$codename}"
 
     sudo mkdir -p /etc/apt/keyrings
