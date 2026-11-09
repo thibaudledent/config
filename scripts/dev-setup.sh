@@ -93,7 +93,6 @@ declare -A ALIAS_PACMAN=(
     [temurin-25]="jdk25-temurin"
     [temurin-27]="jdk-temurin"
     [claude]="claude-code"
-    [gnome-shell-extension-manager]="extension-manager"
 )
 
 declare -A ALIAS_BREW=(
