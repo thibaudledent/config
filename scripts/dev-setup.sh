@@ -43,7 +43,7 @@ PACKAGES=(
     # Editors & IDEs
     vscode sublime-text neovim intellij-idea-ce
     # AI coding assistants
-    antigravity claude-code opencode
+    antigravity claude opencode
     # Languages & runtimes
     python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-26 maven
     # Containers
@@ -59,11 +59,10 @@ mapfile -t PACKAGES < <(printf '%s\n' "${PACKAGES[@]}" | sort)
 # Aliases — when a package name differs per OS, add it here.
 #
 #   declare -A ALIAS_<os>   maps "friendly name" → "real package"
-#   declare -A APT_REPOS    maps "repo name" → "gpg_url|repo_url"
-#   declare -A APT_REPO_FOR maps "friendly name" → "repo name"
+#   declare -A APT_REPOS    maps "friendly name" → "repo_name|gpg_url|repo_url"
 #                           (repo is added to apt before installing)
-#   declare -A COMMANDS     maps "friendly name" → "command it provides"
-#                           (used to detect installs done outside a package manager)
+#
+# The friendly name is also the command checked to detect an existing install.
 #
 # If a package isn't in an alias table, it's used as-is.
 # ─────────────────────────────────────────────────────────────────
@@ -77,6 +76,7 @@ declare -A ALIAS_APT=(
     [temurin-17]="temurin-17-jdk"
     [temurin-21]="temurin-21-jdk"
     [temurin-26]="temurin-26-jdk"
+    [claude]="claude-code"
 )
 
 declare -A ALIAS_PACMAN=(
@@ -88,6 +88,7 @@ declare -A ALIAS_PACMAN=(
     [temurin-17]="jdk17-temurin"
     [temurin-21]="jdk21-temurin"
     [temurin-26]="jdk-temurin"
+    [claude]="claude-code"
 )
 
 declare -A ALIAS_BREW=(
@@ -101,26 +102,19 @@ declare -A ALIAS_BREW=(
     [temurin-21]="temurin@21"
     [temurin-26]="temurin"
     [flameshot]="shottr"  # Flameshot doesn't run well on macOS — Shottr is the native equivalent
+    [claude]="claude-code"
 )
 
 # APT repos needed before installing certain packages.
-# Format: "gpg_key_url|deb_line"
+# Format: "repo_name|gpg_key_url|deb_line" — repo_name is the keyring/list filename,
+# so packages sharing a repo add it only once.
 # The codename placeholder __CODENAME__ is replaced at runtime.
+ADOPTIUM_REPO="adoptium|https://packages.adoptium.net/artifactory/api/gpg/key/public|https://packages.adoptium.net/artifactory/deb __CODENAME__ main"
 declare -A APT_REPOS=(
-    [adoptium]="https://packages.adoptium.net/artifactory/api/gpg/key/public|https://packages.adoptium.net/artifactory/deb __CODENAME__ main"
-    [claude-code]="https://downloads.claude.ai/keys/claude-code.asc|https://downloads.claude.ai/claude-code/apt/stable stable main"
-)
-
-declare -A APT_REPO_FOR=(
-    [temurin-17]="adoptium"
-    [temurin-21]="adoptium"
-    [temurin-26]="adoptium"
-    [claude-code]="claude-code"
-)
-
-# Command name to look for when it differs from the friendly name.
-declare -A COMMANDS=(
-    [claude-code]="claude"
+    [temurin-17]="$ADOPTIUM_REPO"
+    [temurin-21]="$ADOPTIUM_REPO"
+    [temurin-26]="$ADOPTIUM_REPO"
+    [claude]="claude-code|https://downloads.claude.ai/keys/claude-code.asc|https://downloads.claude.ai/claude-code/apt/stable stable main"
 )
 
 # ─────────────────────────────────────────────────────────────────
@@ -260,10 +254,8 @@ is_installed() {
             ;;
     esac
 
-    # Fallback: check if the package's command exists (e.g. installed manually)
-    local cmd="$friendly"
-    if [[ -v "COMMANDS[$friendly]" ]]; then cmd="${COMMANDS[$friendly]}"; fi
-    command_exists "$cmd" && return 0
+    # Fallback: check if a command with the friendly name exists
+    command_exists "$friendly" && return 0
 
     return 1
 }
@@ -282,9 +274,9 @@ install() {
     local pkg; pkg=$(resolve "$friendly")
 
     # Add apt repo if needed (only on apt-based systems)
-    if [[ "$OS" == "ubuntu" || "$OS" == "wsl" ]] && [[ -v "APT_REPO_FOR[$friendly]" ]]; then
-        local repo="${APT_REPO_FOR[$friendly]}" gpg_url deb_line
-        IFS='|' read -r gpg_url deb_line <<< "${APT_REPOS[$repo]}"
+    if [[ "$OS" == "ubuntu" || "$OS" == "wsl" ]] && [[ -v "APT_REPOS[$friendly]" ]]; then
+        local repo gpg_url deb_line
+        IFS='|' read -r repo gpg_url deb_line <<< "${APT_REPOS[$friendly]}"
         add_apt_repo "$repo" "$gpg_url" "$deb_line"
     fi
 
