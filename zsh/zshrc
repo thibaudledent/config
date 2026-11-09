@@ -128,8 +128,8 @@ function setjdk() {
     export PATH
 }
 
-# Default JDK
-setjdk 21
+# Default JDK (latest LTS)
+setjdk 25
 
 # KEYS (Ubuntu & Mac OS X when using zsh)
 # Bind key with "ctrl + u" to erase from the cursor position to the beginning of the line, see https://clementc.github.io/blog/2018/01/25/moving_cli/
