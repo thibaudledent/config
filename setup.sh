@@ -6,34 +6,6 @@ source "${PWD}/scripts/log-utils.sh"
 
 log_section "Setup"
 
-# PREREQUISITES
-# Tools this script (and its sub-scripts) rely on before dev-setup.sh runs.
-# A fresh Ubuntu install does not ship curl, so install them up front.
-log_section "Prerequisites"
-
-PREREQS=(curl wget git gpg zsh)
-missing=()
-for cmd in "${PREREQS[@]}"; do
-  command -v "$cmd" &>/dev/null || missing+=("$cmd")
-done
-
-if [ ${#missing[@]} -eq 0 ]; then
-  log_ok "Prerequisites already installed"
-elif command -v apt-get &>/dev/null; then
-  log_info "Installing prerequisites: ${missing[*]}"
-  sudo apt-get update -y
-  # gpg command is provided by the gnupg package on Debian/Ubuntu
-  sudo apt-get install -y "${missing[@]/#gpg/gnupg}"
-elif command -v pacman &>/dev/null; then
-  log_info "Installing prerequisites: ${missing[*]}"
-  sudo pacman -Sy --noconfirm --needed "${missing[@]/#gpg/gnupg}"
-elif command -v brew &>/dev/null; then
-  log_info "Installing prerequisites: ${missing[*]}"
-  brew install "${missing[@]/#gpg/gnupg}"
-else
-  log_warn "Missing prerequisites (${missing[*]}) and no known package manager found."
-fi
-
 # GNOME EXTENSIONS
 log_section "GNOME Extensions"
 

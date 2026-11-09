@@ -72,13 +72,8 @@ ensure_installer() {
     if [ "$distro" = "arch" ]; then
         yay -S --needed --noconfirm gnome-shell-extension-installer
     else
-        if ! command -v curl &>/dev/null; then
-            log_info "curl not found, installing it…"
-            sudo apt-get update -y
-            sudo apt-get install -y curl
-        fi
         local url="https://raw.githubusercontent.com/brunelli/gnome-shell-extension-installer/master/gnome-shell-extension-installer"
-        sudo curl -sL "$url" -o /usr/local/bin/gnome-shell-extension-installer
+        sudo wget -qO /usr/local/bin/gnome-shell-extension-installer "$url"
         sudo chmod +x /usr/local/bin/gnome-shell-extension-installer
     fi
 
