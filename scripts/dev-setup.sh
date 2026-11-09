@@ -41,9 +41,9 @@ PACKAGES=(
     # Terminal & system monitoring
     terminator tmux htop
     # Editors & IDEs
-    vscode sublime-text neovim intellij-idea-ce antigravity opencode
+    vscode sublime-text neovim intellij-idea-ce opencode
     # AI coding assistants
-    claude-code
+    antigravity claude-code
     # Languages & runtimes
     python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-26 maven
     # Containers
