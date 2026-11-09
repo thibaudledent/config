@@ -42,6 +42,8 @@ PACKAGES=(
     terminator tmux htop
     # Editors & IDEs
     vscode sublime-text neovim intellij-idea-ce antigravity opencode
+    # AI coding assistants
+    claude-code
     # Languages & runtimes
     python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-26 maven
     # Containers
@@ -57,8 +59,11 @@ mapfile -t PACKAGES < <(printf '%s\n' "${PACKAGES[@]}" | sort)
 # Aliases — when a package name differs per OS, add it here.
 #
 #   declare -A ALIAS_<os>   maps "friendly name" → "real package"
-#   declare -A APT_REPOS    maps "friendly name" → "gpg_url|repo_url"
+#   declare -A APT_REPOS    maps "repo name" → "gpg_url|repo_url"
+#   declare -A APT_REPO_FOR maps "friendly name" → "repo name"
 #                           (repo is added to apt before installing)
+#   declare -A COMMANDS     maps "friendly name" → "command it provides"
+#                           (used to detect installs done outside a package manager)
 #
 # If a package isn't in an alias table, it's used as-is.
 # ─────────────────────────────────────────────────────────────────
@@ -103,6 +108,19 @@ declare -A ALIAS_BREW=(
 # The codename placeholder __CODENAME__ is replaced at runtime.
 declare -A APT_REPOS=(
     [adoptium]="https://packages.adoptium.net/artifactory/api/gpg/key/public|https://packages.adoptium.net/artifactory/deb __CODENAME__ main"
+    [claude-code]="https://downloads.claude.ai/keys/claude-code.asc|https://downloads.claude.ai/claude-code/apt/stable stable main"
+)
+
+declare -A APT_REPO_FOR=(
+    [temurin-17]="adoptium"
+    [temurin-21]="adoptium"
+    [temurin-26]="adoptium"
+    [claude-code]="claude-code"
+)
+
+# Command name to look for when it differs from the friendly name.
+declare -A COMMANDS=(
+    [claude-code]="claude"
 )
 
 # ─────────────────────────────────────────────────────────────────
@@ -242,8 +260,10 @@ is_installed() {
             ;;
     esac
 
-    # Fallback: check if a command with the friendly name exists
-    command_exists "$friendly" && return 0
+    # Fallback: check if the package's command exists (e.g. installed manually)
+    local cmd="$friendly"
+    if [[ -v "COMMANDS[$friendly]" ]]; then cmd="${COMMANDS[$friendly]}"; fi
+    command_exists "$cmd" && return 0
 
     return 1
 }
@@ -262,10 +282,10 @@ install() {
     local pkg; pkg=$(resolve "$friendly")
 
     # Add apt repo if needed (only on apt-based systems)
-    if [[ "$OS" == "ubuntu" || "$OS" == "wsl" ]] && [[ "$friendly" == temurin-* ]]; then
-        local gpg_url deb_line
-        IFS='|' read -r gpg_url deb_line <<< "${APT_REPOS[adoptium]}"
-        add_apt_repo "adoptium" "$gpg_url" "$deb_line"
+    if [[ "$OS" == "ubuntu" || "$OS" == "wsl" ]] && [[ -v "APT_REPO_FOR[$friendly]" ]]; then
+        local repo="${APT_REPO_FOR[$friendly]}" gpg_url deb_line
+        IFS='|' read -r gpg_url deb_line <<< "${APT_REPOS[$repo]}"
+        add_apt_repo "$repo" "$gpg_url" "$deb_line"
     fi
 
     case "$OS" in
