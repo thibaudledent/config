@@ -41,7 +41,9 @@ PACKAGES=(
     # Terminal & system monitoring
     terminator tmux htop
     # Editors & IDEs
-    vscode sublime-text neovim intellij-idea-ce antigravity opencode
+    vscode sublime-text neovim intellij-idea-ce
+    # AI coding assistants
+    antigravity claude opencode
     # Languages & runtimes
     python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-26 maven
     # Containers
@@ -57,8 +59,10 @@ mapfile -t PACKAGES < <(printf '%s\n' "${PACKAGES[@]}" | sort)
 # Aliases — when a package name differs per OS, add it here.
 #
 #   declare -A ALIAS_<os>   maps "friendly name" → "real package"
-#   declare -A APT_REPOS    maps "friendly name" → "gpg_url|repo_url"
+#   declare -A APT_REPOS    maps "friendly name" → "repo_name|gpg_url|repo_url"
 #                           (repo is added to apt before installing)
+#
+# The friendly name is also the command checked to detect an existing install.
 #
 # If a package isn't in an alias table, it's used as-is.
 # ─────────────────────────────────────────────────────────────────
@@ -72,6 +76,7 @@ declare -A ALIAS_APT=(
     [temurin-17]="temurin-17-jdk"
     [temurin-21]="temurin-21-jdk"
     [temurin-26]="temurin-26-jdk"
+    [claude]="claude-code"
 )
 
 declare -A ALIAS_PACMAN=(
@@ -83,6 +88,7 @@ declare -A ALIAS_PACMAN=(
     [temurin-17]="jdk17-temurin"
     [temurin-21]="jdk21-temurin"
     [temurin-26]="jdk-temurin"
+    [claude]="claude-code"
 )
 
 declare -A ALIAS_BREW=(
@@ -96,13 +102,19 @@ declare -A ALIAS_BREW=(
     [temurin-21]="temurin@21"
     [temurin-26]="temurin"
     [flameshot]="shottr"  # Flameshot doesn't run well on macOS — Shottr is the native equivalent
+    [claude]="claude-code"
 )
 
 # APT repos needed before installing certain packages.
-# Format: "gpg_key_url|deb_line"
+# Format: "repo_name|gpg_key_url|deb_line" — repo_name is the keyring/list filename,
+# so packages sharing a repo add it only once.
 # The codename placeholder __CODENAME__ is replaced at runtime.
+ADOPTIUM_REPO="adoptium|https://packages.adoptium.net/artifactory/api/gpg/key/public|https://packages.adoptium.net/artifactory/deb __CODENAME__ main"
 declare -A APT_REPOS=(
-    [adoptium]="https://packages.adoptium.net/artifactory/api/gpg/key/public|https://packages.adoptium.net/artifactory/deb __CODENAME__ main"
+    [temurin-17]="$ADOPTIUM_REPO"
+    [temurin-21]="$ADOPTIUM_REPO"
+    [temurin-26]="$ADOPTIUM_REPO"
+    [claude]="claude-code|https://downloads.claude.ai/keys/claude-code.asc|https://downloads.claude.ai/claude-code/apt/stable stable main"
 )
 
 # ─────────────────────────────────────────────────────────────────
@@ -262,10 +274,10 @@ install() {
     local pkg; pkg=$(resolve "$friendly")
 
     # Add apt repo if needed (only on apt-based systems)
-    if [[ "$OS" == "ubuntu" || "$OS" == "wsl" ]] && [[ "$friendly" == temurin-* ]]; then
-        local gpg_url deb_line
-        IFS='|' read -r gpg_url deb_line <<< "${APT_REPOS[adoptium]}"
-        add_apt_repo "adoptium" "$gpg_url" "$deb_line"
+    if [[ "$OS" == "ubuntu" || "$OS" == "wsl" ]] && [[ -v "APT_REPOS[$friendly]" ]]; then
+        local repo gpg_url deb_line
+        IFS='|' read -r repo gpg_url deb_line <<< "${APT_REPOS[$friendly]}"
+        add_apt_repo "$repo" "$gpg_url" "$deb_line"
     fi
 
     case "$OS" in
