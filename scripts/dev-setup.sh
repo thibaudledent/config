@@ -65,6 +65,7 @@ mapfile -t PACKAGES < <(printf '%s\n' "${PACKAGES[@]}" | sort)
 # The friendly name is also the command checked to detect an existing install.
 #
 # If a package isn't in an alias table, it's used as-is.
+# An alias of "-" means the package isn't available on that OS.
 # ─────────────────────────────────────────────────────────────────
 
 declare -A ALIAS_APT=(
@@ -78,6 +79,7 @@ declare -A ALIAS_APT=(
     [temurin-25]="temurin-25-jdk"
     [temurin-27]="temurin-27-jdk"
     [claude]="claude-code"
+    [spokenly]="-"  # macOS/Windows only
 )
 
 declare -A ALIAS_PACMAN=(
@@ -91,6 +93,7 @@ declare -A ALIAS_PACMAN=(
     [temurin-25]="jdk25-temurin"
     [temurin-27]="jdk-temurin"
     [claude]="claude-code"
+    [spokenly]="-"
 )
 
 declare -A ALIAS_BREW=(
@@ -276,6 +279,7 @@ is_installed() {
 install() {
     local friendly="$1"
     local pkg; pkg=$(resolve "$friendly")
+    if [[ "$pkg" == "-" ]]; then log_warn "$friendly is not available on $OS"; return 1; fi
 
     # Add apt repo if needed (only on apt-based systems)
     if [[ "$OS" == "ubuntu" || "$OS" == "wsl" ]] && [[ -v "APT_REPOS[$friendly]" ]]; then
