@@ -45,7 +45,7 @@ PACKAGES=(
     # AI coding assistants
     antigravity claude opencode
     # Languages & runtimes
-    python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-26 maven
+    python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-25 temurin-27 maven
     # Containers
     docker docker-compose
     # Browsers
@@ -75,7 +75,8 @@ declare -A ALIAS_APT=(
     [intellij-idea-ce]="intellij-idea-community"
     [temurin-17]="temurin-17-jdk"
     [temurin-21]="temurin-21-jdk"
-    [temurin-26]="temurin-26-jdk"
+    [temurin-25]="temurin-25-jdk"
+    [temurin-27]="temurin-27-jdk"
     [claude]="claude-code"
 )
 
@@ -87,7 +88,8 @@ declare -A ALIAS_PACMAN=(
     [intellij-idea-ce]="intellij-idea-community-edition"
     [temurin-17]="jdk17-temurin"
     [temurin-21]="jdk21-temurin"
-    [temurin-26]="jdk-temurin"
+    [temurin-25]="jdk25-temurin"
+    [temurin-27]="jdk-temurin"
     [claude]="claude-code"
 )
 
@@ -100,7 +102,8 @@ declare -A ALIAS_BREW=(
     [pip]="python"  # pip ships with the python formula on macOS — no separate package
     [temurin-17]="temurin@17"
     [temurin-21]="temurin@21"
-    [temurin-26]="temurin"
+    [temurin-25]="temurin@25"
+    [temurin-27]="temurin"
     [flameshot]="shottr"  # Flameshot doesn't run well on macOS — Shottr is the native equivalent
     [claude]="claude-code"
 )
@@ -113,7 +116,8 @@ ADOPTIUM_REPO="adoptium|https://packages.adoptium.net/artifactory/api/gpg/key/pu
 declare -A APT_REPOS=(
     [temurin-17]="$ADOPTIUM_REPO"
     [temurin-21]="$ADOPTIUM_REPO"
-    [temurin-26]="$ADOPTIUM_REPO"
+    [temurin-25]="$ADOPTIUM_REPO"
+    [temurin-27]="$ADOPTIUM_REPO"
     [claude]="claude-code|https://downloads.claude.ai/keys/claude-code.asc|https://downloads.claude.ai/claude-code/apt/stable stable main"
 )
 
