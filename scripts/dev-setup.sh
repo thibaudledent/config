@@ -121,6 +121,12 @@ declare -A APT_REPOS=(
     [claude]="claude-code|https://downloads.claude.ai/keys/claude-code.asc|https://downloads.claude.ai/claude-code/apt/stable stable main"
 )
 
+# Install scripts — last-resort fallback when no package manager has the package.
+# PROFILE=/dev/null stops nvm from editing ~/.zshrc (it's a symlink into this repo).
+declare -A INSTALL_SCRIPTS=(
+    [nvm]="curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | PROFILE=/dev/null bash"
+)
+
 # ─────────────────────────────────────────────────────────────────
 # OS Detection
 # ─────────────────────────────────────────────────────────────────
@@ -260,6 +266,8 @@ is_installed() {
 
     # Fallback: check if a command with the friendly name exists
     command_exists "$friendly" && return 0
+    # nvm is a shell function, not a command
+    [[ "$friendly" == nvm && -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]] && return 0
 
     return 1
 }
@@ -271,6 +279,7 @@ is_installed() {
 #   ubuntu/wsl → apt → snap → classic snap → choco (wsl only)
 #   arch       → pacman → yay
 #   macos      → brew → cask
+#   then INSTALL_SCRIPTS (all OS), if defined for the package
 # ─────────────────────────────────────────────────────────────────
 
 install() {
@@ -300,6 +309,8 @@ install() {
             mgr_cask "$pkg" && return 0
             ;;
     esac
+
+    if [[ -v "INSTALL_SCRIPTS[$friendly]" ]]; then bash -c "${INSTALL_SCRIPTS[$friendly]}" && return 0; fi
 
     return 1
 }
