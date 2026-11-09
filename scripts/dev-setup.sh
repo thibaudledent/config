@@ -160,7 +160,7 @@ ensure_updated() {
     if $_updated; then return 0; fi
     log_info "Updating package lists..."
     case "$OS" in
-        ubuntu|wsl) sudo apt-get update -y ;;
+        ubuntu|wsl) sudo apt-get update -y || log_warn "apt update reported errors (a broken repo is re-added below if needed)" ;;
         arch)       sudo pacman -Sy --noconfirm ;;
         macos)      brew update ;;
     esac
