@@ -72,6 +72,7 @@ declare -A ALIAS_APT=(
     [pip]="python3-pip"
     [docker]="docker.io"
     [dbeaver]="dbeaver-ce"
+    [vscode]="code"  # installed from the official classic snap
     [intellij-idea-ce]="intellij-idea-community"
     [temurin-17]="temurin-17-jdk"
     [temurin-21]="temurin-21-jdk"
@@ -85,6 +86,7 @@ declare -A ALIAS_PACMAN=(
     [pip]="python-pip"
     [python3]="python"
     [fd-find]="fd"
+    [vscode]="visual-studio-code-bin"  # AUR
     [intellij-idea-ce]="intellij-idea-community-edition"
     [temurin-17]="jdk17-temurin"
     [temurin-21]="jdk21-temurin"
@@ -260,6 +262,7 @@ is_installed() {
 
     # Fallback: check if a command with the friendly name exists
     command_exists "$friendly" && return 0
+    command_exists "$pkg" && return 0
 
     return 1
 }
