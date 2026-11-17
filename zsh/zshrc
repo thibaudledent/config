@@ -201,10 +201,29 @@ fi
 # can be replaced with: 'cd <CTRL + T>', which has the advantage of working with any command. For example, 'vim <CTRL + T>'. See also: https://github.com/sharkdp/fd?tab=readme-ov-file#using-fd-with-fzf
 alias ccd='cd "$(find "$CUSTOM_HOME/Documents" -maxdepth 4 -type d \( -name .git -o -name node_modules -o -name target -o -name build -o -name dist -o -name .next -o -name .gradle -o -name .mvn -o -name out -o -name logs \) -prune -o -type d -print 2>/dev/null | fzf)"'
 
-# IntelliJ IDEA clean detachment launcher
-if [[ "$(uname)" == "Darwin" ]]; then
-  alias idea='open -na "IntelliJ IDEA.app" --args'
-fi
+# IntelliJ IDEA clean detachment launcher (cross-platform)
+case "$(uname -s)" in
+    Darwin)
+        # macOS
+        alias idea='open -na "IntelliJ IDEA.app" --args'
+        ;;
+
+    Linux)
+        if [ -f "/etc/wsl.conf" ]; then
+            # WSL (Windows Subsystem for Linux)
+            alias idea='"$(ls -d "/mnt/c/Program Files/JetBrains/IntelliJ IDEA"* 2>/dev/null | sort -V | tail -n1)/bin/idea64.exe"'
+        else
+            # Native Linux (Ubuntu / Snap)
+            if [[ -x /snap/bin/intellij-idea-community ]]; then
+                alias idea='/snap/bin/intellij-idea-community'
+            elif [[ -x /usr/local/bin/idea ]]; then
+                alias idea='/usr/local/bin/idea'
+            elif [[ -x /usr/bin/idea ]]; then
+                alias idea='/usr/bin/idea'
+            fi
+        fi
+        ;;
+esac
 
 # could be added as aliases
 # sudo xdg-open . # Opening the file browser from terminal as root (gnome file)
@@ -226,7 +245,6 @@ if [ -f "/etc/wsl.conf" ]; then
     alias git="'$(wslpath "$(where.exe git | tr -d '\r')")'"
     alias java="'$(wslpath "$(where.exe java | grep $(basename "$(cmd.exe /C 'echo %JAVA_HOME%' 2>/dev/null | tr -d '\r')" | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+') | tr -d '\r')")'"
     alias mvn="PowerShell.exe mvn"
-    alias idea='"$(ls -d "/mnt/c/Program Files/JetBrains/IntelliJ IDEA"* | sort -V | tail -n1)/bin/idea64.exe"'
     alias npm="'$(wslpath "$(where.exe npm | head -n 1 | tr -d '\r')")'"
     alias node="'$(wslpath "$(where.exe node | tr -d '\r')")'"
     alias nvm="'$(wslpath "$(where.exe nvm | tr -d '\r')")'"
