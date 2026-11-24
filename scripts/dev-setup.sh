@@ -36,6 +36,8 @@ source "$SCRIPT_DIR/log-utils.sh"
 PACKAGES=(
     # Core CLI utilities
     git curl wget unzip zip jq tree tldr
+    # C toolchain (Neovim treesitter parsers) — Linux only, macOS uses Xcode CLT
+    build-essential
     # Shell & search tools
     zsh fzf fd-find ripgrep bat shellcheck
     # Terminal & system monitoring

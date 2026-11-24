@@ -165,12 +165,48 @@ local ensure_ts = {
   "json", "lua", "luadoc", "markdown", "markdown_inline", "python", "query",
   "regex", "vim", "vimdoc", "yaml", "xml", "angular",
 }
-local ts_ok, ts = pcall(require, "nvim-treesitter")
-if ts_ok then
+
+-- Mason is set up here (not in the LSP section) because it prepends its bin/
+-- dir to PATH, which is where the `tree-sitter` CLI is installed below.
+require("mason").setup()
+
+-- Parsers are compiled locally: nvim-treesitter (main) needs the `tree-sitter`
+-- CLI (0.25+) and a C compiler. The CLI is fetched through Mason when missing,
+-- so nothing has to be installed system-wide besides a compiler.
+local function ts_install_missing()
+  local ts_ok, ts = pcall(require, "nvim-treesitter")
+  if not ts_ok then return end
   local installed = require("nvim-treesitter.config").get_installed()
   local to_install = vim.tbl_filter(function(p) return not vim.tbl_contains(installed, p) end, ensure_ts)
-  if #to_install > 0 then ts.install(to_install) end
+  if #to_install == 0 then return end
+
+  local has_cc = vim.iter({ "cc", "gcc", "clang" }):any(function(c) return vim.fn.executable(c) == 1 end)
+  if not has_cc then
+    vim.notify("Treesitter: no C compiler found, parsers not installed (sudo apt install build-essential)",
+      vim.log.levels.WARN)
+    return
+  end
+  ts.install(to_install)
 end
+
+local function ensure_ts_cli(on_ready)
+  if vim.fn.executable("tree-sitter") == 1 then return on_ready() end
+  local registry = require("mason-registry")
+  registry.refresh(vim.schedule_wrap(function()
+    local pkg = registry.get_package("tree-sitter-cli")
+    if pkg:is_installing() then return end
+    vim.notify("Treesitter: installing tree-sitter CLI via Mason...")
+    pkg:install({}, vim.schedule_wrap(function(success)
+      if success and vim.fn.executable("tree-sitter") == 1 then
+        on_ready()
+      else
+        vim.notify("Treesitter: tree-sitter CLI install failed, see :Mason", vim.log.levels.ERROR)
+      end
+    end))
+  end))
+end
+
+ensure_ts_cli(ts_install_missing)
 
 -- Enable highlighting + indentation per buffer.
 vim.api.nvim_create_autocmd("FileType", {
@@ -217,7 +253,7 @@ require("blink.cmp").setup({
 vim.env.JDTLS_JVM_ARGS = "-javaagent:"
   .. vim.fn.expand("$HOME/.local/share/nvim/mason/packages/jdtls/lombok.jar")
 
-require("mason").setup()
+-- (mason.setup() is called in the Treesitter section above)
 require("mason-lspconfig").setup({
   ensure_installed = {
     "lua_ls",
