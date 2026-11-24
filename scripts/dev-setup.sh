@@ -93,7 +93,7 @@ declare -A ALIAS_PACMAN=(
     [temurin-25]="jdk25-temurin"
     [temurin-27]="jdk-temurin"
     [claude]="claude-code"
-    [slack]="slack-desktop"  # AUR package (installed via yay)
+    [slack]="slack-desktop"
 )
 
 declare -A ALIAS_BREW=(
