@@ -51,7 +51,7 @@ PACKAGES=(
     # Browsers
     firefox chromium
     # Desktop apps & media
-    flameshot meld dbeaver vlc spotify imagemagick spokenly
+    flameshot meld dbeaver vlc spotify slack imagemagick spokenly
     # GNOME (Linux only — fails harmlessly on macOS/WSL)
     gnome-shell-extension-manager
 )
@@ -93,6 +93,7 @@ declare -A ALIAS_PACMAN=(
     [temurin-25]="jdk25-temurin"
     [temurin-27]="jdk-temurin"
     [claude]="claude-code"
+    [slack]="slack-desktop"  # AUR package (installed via yay)
 )
 
 declare -A ALIAS_BREW=(
