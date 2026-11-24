@@ -51,7 +51,7 @@ PACKAGES=(
     # Containers
     docker docker-compose
     # Browsers
-    firefox chromium
+    firefox google-chrome
     # Desktop apps & media
     flameshot meld dbeaver vlc spotify slack imagemagick spokenly
     # GNOME (Linux only — fails harmlessly on macOS/WSL)
@@ -82,6 +82,7 @@ declare -A ALIAS_APT=(
     [temurin-25]="temurin-25-jdk"
     [temurin-27]="temurin-27-jdk"
     [claude]="claude-code"
+    [google-chrome]="google-chrome-stable"
 )
 
 declare -A ALIAS_PACMAN=(
@@ -124,6 +125,7 @@ declare -A APT_REPOS=(
     [temurin-25]="$ADOPTIUM_REPO"
     [temurin-27]="$ADOPTIUM_REPO"
     [claude]="claude-code|https://downloads.claude.ai/keys/claude-code.asc|https://downloads.claude.ai/claude-code/apt/stable stable main"
+    [google-chrome]="google-chrome|https://dl.google.com/linux/linux_signing_key.pub|https://dl.google.com/linux/chrome/deb/ stable main"
 )
 
 # ─────────────────────────────────────────────────────────────────
