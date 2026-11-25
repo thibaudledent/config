@@ -48,8 +48,8 @@ PACKAGES=(
     antigravity claude opencode
     # Languages & runtimes
     python3 pip nodejs npm nvm temurin-17 temurin-21 temurin-25 temurin-27 maven
-    # Containers
-    docker docker-compose
+    # Containers (colima = Docker runtime for macOS — fails harmlessly on Linux/WSL)
+    colima docker docker-compose
     # Browsers
     firefox google-chrome
     # Desktop apps & media
