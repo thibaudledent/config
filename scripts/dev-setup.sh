@@ -110,6 +110,7 @@ declare -A ALIAS_BREW=(
     [temurin-21]="temurin@21"
     [temurin-25]="temurin@25"
     [temurin-27]="temurin"
+    [terminator]="iterm2"  # Terminator doesn't run well on macOS — iTerm2 is the native equivalent
     [flameshot]="shottr"  # Flameshot doesn't run well on macOS — Shottr is the native equivalent
     [claude]="claude-code"
 )
