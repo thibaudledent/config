@@ -24,6 +24,7 @@ NO_FILTER=false
 VERBOSE=false
 FORCE_FIND=false
 OUTPUT=""
+PROGRESS=auto          # auto | on | off  (see -p / -q)
 EXTRA_EXCLUDES=()
 
 # ------------------------------------------------------------------- usage ---
@@ -41,6 +42,9 @@ Options:
   -a            Disable the exclusion rules (binaries are still skipped)
   -G            Force `find` even inside a Git repository
   -v            Print skipped files and the reason on stderr
+  -p            Force the progress display on stderr (one line per file
+                when stderr is not a terminal)
+  -q            Disable the progress display
   -h            Show this help
 
 Examples:
@@ -50,10 +54,14 @@ EOF
     exit "${1:-1}"
 }
 
-log() { [ "$VERBOSE" = true ] && printf '%s\n' "$*" >&2; return 0; }
+log() {
+    [ "$VERBOSE" = true ] || return 0
+    [ "$PROGRESS" = line ] && printf '\r\033[K' >&2   # don't glue onto the progress line
+    printf '%s\n' "$*" >&2
+}
 
 # ----------------------------------------------------------------- options ---
-while getopts "tl:s:o:x:naGvh" opt; do
+while getopts "tl:s:o:x:naGvpqh" opt; do
     case "$opt" in
         t) TRUNCATE=true ;;
         l) MAX_LINES=$OPTARG ;;
@@ -64,6 +72,8 @@ while getopts "tl:s:o:x:naGvh" opt; do
         a) NO_FILTER=true ;;
         G) FORCE_FIND=true ;;
         v) VERBOSE=true ;;
+        p) PROGRESS=on ;;
+        q) PROGRESS=off ;;
         h) show_usage 0 ;;
         *) show_usage ;;
     esac
@@ -78,6 +88,39 @@ if [ ! -d "$ROOT" ]; then
     echo "Error: Path '$1' doesn't exist or is not a directory" >&2
     exit 1
 fi
+ABS_ROOT=$(cd "$ROOT" && pwd -P) || ABS_ROOT=$ROOT
+[ "$ABS_ROOT" = / ] && ABS_ROOT=""   # avoid "//etc/..."
+
+# ============================================================== progress =====
+# Resolved mode: line (self-overwriting, terminal) | list (one line per file) | off
+case "$PROGRESS" in
+    auto) if [ -t 2 ]; then PROGRESS=line; else PROGRESS=off; fi ;;
+    on)   if [ -t 2 ]; then PROGRESS=line; else PROGRESS=list; fi ;;
+    *)    PROGRESS=off ;;
+esac
+COLS=$(tput cols 2>/dev/null) || COLS=80
+case "$COLS" in ''|*[!0-9]*) COLS=80 ;; esac
+
+progress() {   # $1=phase $2=current $3=total $4=relative path
+    [ "$PROGRESS" = off ] && return 0
+    local pct path prefix avail
+    pct=$(( $3 > 0 ? $2 * 100 / $3 : 100 ))
+    path="$ABS_ROOT/$4"
+    prefix=$(printf '[%s] %3d%% (%d/%d) ' "$1" "$pct" "$2" "$3")
+    if [ "$PROGRESS" = list ]; then
+        printf '%s%s\n' "$prefix" "$path" >&2
+        return 0
+    fi
+    # Keep the line narrower than the terminal: a wrapped line can't be cleared by \r
+    avail=$(( COLS - ${#prefix} - 1 ))
+    if [ "$avail" -lt 10 ]; then
+        path=""
+    elif [ "${#path}" -gt "$avail" ]; then
+        path="…${path: -$((avail - 1))}"
+    fi
+    printf '\r\033[K%s%s' "$prefix" "$path" >&2
+}
+progress_done() { [ "$PROGRESS" = line ] && printf '\r\033[K' >&2; return 0; }
 
 # ============================================================== filtering ====
 # Returns 0 -> skip the file, 1 -> keep it
@@ -211,20 +254,28 @@ list_candidates() {
 
 # ============================================================== selection ====
 KEPT=$(mktemp) || exit 1
-trap 'rm -f "$KEPT"' EXIT
+CANDS=$(mktemp) || { rm -f "$KEPT"; exit 1; }
+trap 'rm -f "$KEPT" "$CANDS"; progress_done' EXIT
+trap 'exit 130' INT TERM
+
+# Materialise the list first so the total is known for the percentage
+list_candidates > "$CANDS"
+n_candidates=$(tr -cd '\0' < "$CANDS" | wc -c | tr -d ' ')
 
 n_total=0; n_kept=0; n_rule=0; n_binary=0; n_size=0; n_secret=0
 
-# Process substitution (not a pipe) keeps the loop in the current shell,
+# Redirection from a file (not a pipe) keeps the loop in the current shell,
 # so the counters below survive the loop.
 while IFS= read -r -d '' rel; do
     [ -n "$rel" ] || continue
     n_total=$((n_total + 1))
+    progress scan "$n_total" "$n_candidates" "$rel"
     abs="$ROOT/$rel"
 
     [ -f "$abs" ] || continue                       # ls-files also reports deleted files
     [ -n "$OUTPUT" ] && [ "$abs" -ef "$OUTPUT" ] 2>/dev/null && continue   # never dump ourselves
     if [ ! -r "$abs" ]; then
+        [ "$PROGRESS" = line ] && printf '\r\033[K' >&2
         echo "Cannot read file: $rel" >&2
         continue
     fi
@@ -250,12 +301,15 @@ while IFS= read -r -d '' rel; do
 
     n_kept=$((n_kept + 1))
     printf '%s\0' "$rel" >> "$KEPT"
-done < <(list_candidates)
+done < "$CANDS"
+progress_done
 
 # ================================================================= output ====
 if [ -n "$OUTPUT" ]; then
     exec > "$OUTPUT" || { echo "Error: cannot write to '$OUTPUT'" >&2; exit 1; }
 fi
+# Dumping to the terminal: the content would scramble the progress line
+[ "$PROGRESS" = line ] && [ -t 1 ] && PROGRESS=off
 
 branch=$(git -C "$ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null) || branch="n/a"
 commit=$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null)     || commit="n/a"
@@ -300,6 +354,10 @@ display_file() {
 }
 
 printf '\n##### FILE CONTENTS #####\n'
+n_done=0
 while IFS= read -r -d '' rel; do
+    n_done=$((n_done + 1))
+    progress dump "$n_done" "$n_kept" "$rel"
     display_file "$rel"
 done < "$KEPT"
+progress_done
